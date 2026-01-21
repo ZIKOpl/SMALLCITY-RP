@@ -1045,5 +1045,49 @@ async function confirmImportJSON() {
         toastError('Erreur d\'import', e.message);
     }
 }
+
+/* =============================================
+   COMPTEUR JOUEURS FIVEM - À activer plus tard
+============================================= */
+
+async function updatePlayerCount() {
+    // ⚠️ DÉSACTIVÉ POUR L'INSTANT - À activer quand le serveur sera ouvert
+    return;
+    
+    /*
+    // Pour activer plus tard, décommentez ce code :
+    
+    try {
+        const response = await fetch('VOTRE_IP_SERVEUR:30120/players.json');
+        const players = await response.json();
+        
+        const countElement = document.getElementById('playerCount');
+        countElement.innerHTML = `${players.length}/64`; // Ajustez 64 selon votre max
+        
+        // Retirer le badge "Bientôt"
+        countElement.classList.remove('coming-soon-badge');
+    } catch (error) {
+        console.error('Erreur récupération joueurs:', error);
+        document.getElementById('playerCount').innerHTML = '<span class="coming-soon-badge">Bientôt</span>';
+    }
+    */
+}
+
+// Mettre à jour toutes les 30 secondes (quand le serveur sera ouvert)
+// setInterval(updatePlayerCount, 30000);
+
+// Fonction pour activer le bouton "Jouer" (quand le serveur sera ouvert)
+function enablePlayButton() {
+    const playBtn = document.querySelector('.btn-play');
+    playBtn.classList.remove('btn-disabled');
+    playBtn.classList.add('active');
+    playBtn.disabled = false;
+    playBtn.onclick = () => {
+        // Lien FiveM à ajouter
+        window.location.href = 'fivem://connect/VOTRE_IP:PORT';
+    };
+}
+
+// Pour activer plus tard, appelez : enablePlayButton();
 /* --- INIT --- */
 init();

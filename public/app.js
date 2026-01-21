@@ -200,25 +200,6 @@ document.addEventListener('click', (e) => {
     }
 });
 
-function toggleCatMenu(cat) {
-    closeCatMenus();
-    const menu = document.getElementById(`catMenu-${cat}`);
-    if(menu) {
-        menu.classList.toggle('hidden');
-    }
-}
-
-function closeCatMenus() {
-    document.querySelectorAll('.cat-dropdown').forEach(m => m.classList.add('hidden'));
-}
-
-// Fermer les menus si on clique ailleurs
-document.addEventListener('click', (e) => {
-    if(!e.target.closest('.cat-menu-trigger') && !e.target.closest('.cat-dropdown')) {
-        closeCatMenus();
-    }
-});
-
 /* --- TOGGLE CATEGORY --- */
 function toggleCategory(catName) {
     if (collapsedCategories.has(catName)) {

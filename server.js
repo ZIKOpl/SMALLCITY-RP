@@ -248,6 +248,40 @@ app.post('/api/users/:id/status', (req, res) => {
 });
 
 /* =========================
+   NEWSLETTER
+========================= */
+app.get("/api/newsletter", (req, res) => {
+    if (!req.user || req.user.status !== 'admin') {
+        return res.status(403).json({ error: 'Accès refusé' });
+    }
+    sendFile(res, "newsletter");
+});
+
+app.post("/api/newsletter", (req, res) => {
+    try {
+        const newsletterPath = path.join(dataDir, 'newsletter.json');
+        let subscribers = [];
+        
+        if (fs.existsSync(newsletterPath)) {
+            subscribers = JSON.parse(fs.readFileSync(newsletterPath, 'utf-8'));
+        }
+        
+        // Vérifier si déjà inscrit
+        const exists = subscribers.find(s => s.discord === req.body.discord);
+        if (!exists) {
+            subscribers.push(req.body);
+            fs.writeFileSync(newsletterPath, JSON.stringify(subscribers, null, 2));
+            console.log(`✅ Nouvelle inscription newsletter: ${req.body.discord}`);
+        }
+        
+        res.sendStatus(200);
+    } catch (error) {
+        console.error('❌ Erreur newsletter:', error);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+/* =========================
    DATA HELPERS
 ========================= */
 const getPath = (file) => path.join(__dirname, `data/${file}.json`);

@@ -34,8 +34,9 @@ function renderAuth() {
     if (!currentUser) {
         area.innerHTML = `<a href="${API_URL}/auth/discord" class="btn btn-discord"><i class="fa-brands fa-discord"></i> Connexion</a>`;
         document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.editor-control').forEach(el => el.classList.add('hidden'));
     } else {
-        // Afficher simplement le profil (sans badge de statut pour l'utilisateur)
+        // Afficher le profil
         area.innerHTML = `
             <div style="display:flex; align-items:center; gap:10px; background:#111; padding:5px 15px; border-radius:20px; border:1px solid #222;">
                 <img src="${currentUser.avatar}" style="width:30px;height:30px;border-radius:50%;">
@@ -43,14 +44,15 @@ function renderAuth() {
                 <button class="btn-icon" onclick="logout()" style="padding:4px;"><i class="fa-solid fa-power-off"></i></button>
             </div>`;
         
-        // Afficher les contrôles admin SEULEMENT si admin (pas si approuvé)
+        // Afficher les contrôles admin SEULEMENT si admin
         if (currentUser.isAdmin) {
             document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
+            document.querySelectorAll('.editor-only').forEach(el => el.classList.remove('hidden'));
         } else {
             document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
         }
         
-        // Afficher les boutons d'édition si éditeur (admin OU approuvé)
+        // Afficher les contrôles éditeur si éditeur (admin OU approuvé)
         if (currentUser.isEditor) {
             document.querySelectorAll('.editor-control').forEach(el => el.classList.remove('hidden'));
         } else {

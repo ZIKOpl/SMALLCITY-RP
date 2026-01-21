@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>SmallCity RP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-default">
+
+<!-- PARTICLES -->
+<div class="particles">
+    <div class="particle p1"></div><div class="particle p2"></div><div class="particle p3"></div><div class="particle p4"></div>
+</div>
+
+<header class="header">
+    <div class="container flex-header">
+        <div class="logo-area">
+            <div class="logo-glow"></div>
+            <img src="assets/logo.png" class="logo-img" alt="Logo">
+            <div class="logo-text">Small<span>City</span></div>
+        </div>
+
+        <nav class="nav">
+             <a onclick="switchPage('home')" class="active">Accueil</a>
+             <a onclick="switchPage('rules')">Règlement</a>
+             <a onclick="switchPage('legal')">Entreprises</a>
+             <a onclick="switchPage('illegal')">Groupes Illégaux</a>
+             <a onclick="switchPage('users')" class="admin-only hidden">Utilisateurs</a>
+        </nav>
+
+        <div class="auth-area" id="auth-area"></div>
+    </div>
+</header>
+
+<main class="container">
+    
+    <!-- PAGE ACCUEIL -->
+    <section id="home" class="page active">
+        <div class="hero">
+            <div class="hero-badge">REJOIGNEZ NOUS</div>
+            <h1 class="shimmer-text">Redéfinissez Votre <span class="text-gradient">Avenir</span></h1>
+            <p class="hero-desc">SmallCity RP n'est pas juste un serveur, c'est une communauté. Une économie stable, une administration impartiale et des dizaines de possibilités.</p>
+            <div class="hero-actions">
+                <button class="btn btn-glow" onclick="switchPage('rules')"><i class="fa-solid fa-book-open"></i> Règlement</button>
+                <a href="https://discord.gg/SmallCity" target="_blank" class="btn btn-discord"><i class="fa-brands fa-discord"></i> Discord</a>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-container">
+            <div class="stat-item"><div class="stat-value">24/7</div><div class="stat-label">Uptime</div></div>
+            <div class="stat-item"><div class="stat-value">V2.0</div><div class="stat-label">Scripts</div></div>
+            <div class="stat-item"><div class="stat-value">PRO</div><div class="stat-label">Staff</div></div>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="card-bg-effect"></div><div class="card-icon"><i class="fa-solid fa-microchip"></i></div>
+                <h3>Innovation</h3><p>Développement de scripts exclusifs pour une expérience unique.</p>
+            </div>
+            <div class="feature-card">
+                <div class="card-bg-effect"></div><div class="card-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <h3>Sécurité</h3><p>Protection anti-cheat avancée et modération active.</p>
+            </div>
+            <div class="feature-card">
+                <div class="card-bg-effect"></div><div class="card-icon"><i class="fa-solid fa-globe"></i></div>
+                <h3>Immersion</h3><p>Un monde vivant avec des scénarios écrits par la communauté.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- PAGE REGLEMENT -->
+    <section id="rules" class="page">
+        <div class="page-header">
+            <div class="header-text">
+                <h2>Documentation</h2>
+                <p>Le guide de référence pour une bonne cohabitation.</p>
+            </div>
+            <button class="btn btn-glow editor-control hidden" onclick="openModal('modalAddCat')"><i class="fa-solid fa-folder-plus"></i> Catégorie</button>
+        </div>
+
+        <div class="docs-layout">
+            <aside class="docs-sidebar">
+                <div id="rulesSidebar"></div>
+            </aside>
+            
+            <div class="docs-content">
+<div id="docToolbar" class="doc-toolbar hidden">
+    <div class="toolbar-group">
+        <button class="t-btn" onclick="execCmd('bold')" title="Gras"><b>B</b></button>
+        <button class="t-btn" onclick="execCmd('italic')" title="Italique"><i>I</i></button>
+        <button class="t-btn" onclick="execCmd('underline')" title="Souligné"><u>U</u></button>
+        <button class="t-btn" onclick="execCmd('strikeThrough')" title="Barré"><s>S</s></button>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="toolbar-group">
+        <button class="t-btn" onclick="insertHeading()" title="Titre"><i class="fa-solid fa-heading"></i></button>
+        <button class="t-btn" onclick="execCmd('insertUnorderedList')" title="Liste"><i class="fa-solid fa-list-ul"></i></button>
+        <button class="t-btn" onclick="execCmd('insertOrderedList')" title="Liste numérotée"><i class="fa-solid fa-list-ol"></i></button>
+        <button class="t-btn" onclick="execCmd('formatBlock', 'blockquote')" title="Citation">❝</button>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="toolbar-group">
+        <button class="t-btn" onclick="execCmd('justifyLeft')" title="Aligner gauche"><i class="fa-solid fa-align-left"></i></button>
+        <button class="t-btn" onclick="execCmd('justifyCenter')" title="Centrer"><i class="fa-solid fa-align-center"></i></button>
+        <button class="t-btn" onclick="execCmd('justifyRight')" title="Aligner droite"><i class="fa-solid fa-align-right"></i></button>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="toolbar-group">
+        <input type="color" class="color-picker" onchange="execCmd('foreColor', this.value)" title="Couleur du texte">
+        <input type="color" class="color-picker" onchange="execCmd('hiliteColor', this.value)" value="#000000" title="Surligner">
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="toolbar-group">
+        <button class="t-btn" onclick="insertDivider()" title="Séparateur"><i class="fa-solid fa-minus"></i></button>
+        <button class="t-btn" onclick="insertCodeBlock()" title="Code"><i class="fa-solid fa-code"></i></button>
+    </div>
+</div>
+
+                <div id="ruleDisplay" class="doc-display">
+                    <div class="empty-state">
+                        <div class="icon-circle"><i class="fa-regular fa-file-lines"></i></div>
+                        <h3>Prêt à lire ?</h3>
+                        <p>Sélectionnez une règle.</p>
+                    </div>
+                </div>
+
+                <div id="docFooter" class="doc-footer hidden">
+                    <button class="btn btn-danger" onclick="deleteRule()"><i class="fa-solid fa-trash"></i></button>
+                    <button class="btn btn-secondary" onclick="reorganizeRule()"><i class="fa-solid fa-arrows-turn-to-dots"></i> Réorganiser</button>
+                    <div style="flex:1"></div>
+                    <button class="btn btn-glow" onclick="saveRule(event)"><i class="fa-solid fa-check"></i> Sauvegarder</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PAGE ENTREPRISES -->
+    <section id="legal" class="page">
+        <div class="page-header">
+            <div class="header-text"><h2>Entreprises</h2><p>Légal et prospère.</p></div>
+            <button class="btn btn-glow editor-control hidden" onclick="openModal('modalAddLegal')"><i class="fa-solid fa-plus"></i> Créer</button>
+        </div>
+        <div class="factions-grid" id="legalGrid"></div>
+    </section>
+
+    <!-- PAGE GROUPES -->
+    <section id="illegal" class="page">
+        <div class="page-header">
+            <div class="header-text"><h2>Groupes Illégaux</h2><p>L'ombre et le danger.</p></div>
+            <button class="btn btn-glow editor-control hidden" onclick="openModal('modalAddIllegal')"><i class="fa-solid fa-skull"></i> Créer</button>
+        </div>
+        <div class="factions-grid" id="illegalGrid"></div>
+    </section>
+
+    <!-- PAGE GESTION UTILISATEURS (Admin uniquement) -->
+    <section id="users" class="page">
+        <div class="page-header">
+            <div class="header-text">
+            <h2>Gestion des Utilisateurs</h2>
+            <p>Gérez les accès et permissions.</p>
+        </div>
+    </div>
+
+    <div class="users-search-bar">
+        <input type="text" id="userSearch" placeholder="🔍 Rechercher un utilisateur..." onkeyup="filterUsers()">
+    </div>
+
+    <div class="users-stats">
+    <div class="user-stat-card">
+        <div class="stat-icon" style="background: rgba(0, 229, 255, 0.1); color: #00e5ff;">
+            <i class="fa-solid fa-user-shield"></i>
+        </div>
+        <div class="stat-info">
+            <div class="stat-number" id="adminCount">0</div>
+            <div class="stat-label">Administrateurs</div>
+        </div>
+    </div>
+    <div class="user-stat-card">
+        <div class="stat-icon" style="background: rgba(0, 255, 157, 0.1); color: #00ff9d;">
+            <i class="fa-solid fa-user-check"></i>
+        </div>
+        <div class="stat-info">
+            <div class="stat-number" id="approvedCount">0</div>
+            <div class="stat-label">Approuvés</div>
+        </div>
+    </div>
+    <div class="user-stat-card">
+        <div class="stat-icon" style="background: rgba(255, 165, 2, 0.1); color: #ffa502;">
+            <i class="fa-solid fa-user-clock"></i>
+        </div>
+        <div class="stat-info">
+            <div class="stat-number" id="pendingCount">0</div>
+            <div class="stat-label">En attente</div>
+        </div>
+    </div>
+    <div class="user-stat-card">
+        <div class="stat-icon" style="background: rgba(255, 71, 87, 0.1); color: #ff4757;">
+            <i class="fa-solid fa-user-xmark"></i>
+        </div>
+        <div class="stat-info">
+            <div class="stat-number" id="blockedCount">0</div>
+            <div class="stat-label">Refusés</div>
+        </div>
+    </div>
+</div>
+
+    <div class="users-table-container">
+        <table class="users-table">
+            <thead>
+                <tr>
+                    <th>Utilisateur</th>
+                    <th>ID Discord</th>
+                    <th>Statut</th>
+                    <th>Dernière connexion</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="usersTableBody">
+                <!-- Rempli dynamiquement -->
+            </tbody>
+        </table>
+    </div>
+</section>
+
+</main>
+
+<!-- MODALS -->
+<div id="modalAddCat" class="modal hidden">
+    <div class="modal-box">
+        <h3>Nouvelle Catégorie</h3>
+        <input type="text" id="inCatName" placeholder="Nom de la catégorie">
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeAllModals()">Annuler</button>
+            <button class="btn btn-glow" onclick="addCat()">Créer</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalAddLegal" class="modal hidden">
+    <div class="modal-box">
+        <h3>Nouvelle Entreprise</h3>
+        <input type="text" id="inLegalName" placeholder="Nom">
+        <textarea id="inLegalDesc" placeholder="Description" rows="3"></textarea>
+        <input type="text" id="inLegalImage" placeholder="URL Image (optionnel)">
+        <input type="text" id="inLegalDiscord" placeholder="Lien Discord">
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeAllModals()">Annuler</button>
+            <button class="btn btn-glow" onclick="addFaction('legalGrid')">Créer</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalAddIllegal" class="modal hidden">
+    <div class="modal-box">
+        <h3>Nouveau Groupe Illégal</h3>
+        <input type="text" id="inIllegalName" placeholder="Nom">
+        <textarea id="inIllegalDesc" placeholder="Description" rows="3"></textarea>
+        <input type="text" id="inIllegalImage" placeholder="URL Image (optionnel)">
+        <input type="text" id="inIllegalDiscord" placeholder="Lien Discord">
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeAllModals()">Annuler</button>
+            <button class="btn btn-glow" onclick="addFaction('illegalGrid')">Créer</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalReorganize" class="modal hidden">
+    <div class="modal-box">
+        <h3>Réorganiser la règle</h3>
+        <p style="color: #888; margin-bottom: 20px;">Déplacer "<strong id="reorganizeRuleName"></strong>" vers :</p>
+        <div id="reorganizeOptions" style="display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto;"></div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeAllModals()">Annuler</button>
+            <button class="btn btn-glow" onclick="confirmReorganize()">Déplacer</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODALS PERSONNALISÉES POUR PROMPT/CONFIRM -->
+<div id="customConfirm" class="modal hidden">
+    <div class="modal-box">
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(255, 42, 42, 0.1); display: flex; align-items: center; justify-content: center;">
+                <i class="fa-solid fa-triangle-exclamation" style="color: #ff4757; font-size: 1.5rem;"></i>
+            </div>
+            <h3 style="margin: 0;" id="confirmMessage">Êtes-vous sûr ?</h3>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="resolveCustomConfirm(false)">Annuler</button>
+            <button class="btn btn-danger" onclick="resolveCustomConfirm(true)">Confirmer</button>
+        </div>
+    </div>
+</div>
+
+<div id="customPrompt" class="modal hidden">
+    <div class="modal-box">
+        <h3 id="promptMessage" style="margin-bottom: 20px;">Entrez une valeur</h3>
+        <input type="text" id="promptInput" placeholder="Votre réponse...">
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="resolveCustomPrompt(null)">Annuler</button>
+            <button class="btn btn-glow" onclick="resolveCustomPrompt(document.getElementById('promptInput').value)">Valider</button>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<!-- FOOTER -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-left">
+            <div class="footer-logo">
+                <img src="assets/logo.png" alt="Logo">
+                <div class="footer-logo-text">Small<span>City</span></div>
+            </div>
+        </div>
+        
+        <div class="footer-right">
+            <span>© 2025 SmallCity RP - Tous droits réservés • Développé avec <i class="fa-solid fa-heart footer-heart"></i> par <strong>Ziko</strong></span>
+        </div>
+    </div>
+</footer>
+<!-- CONTAINER NOTIFICATIONS TOAST -->
+<div id="toastContainer"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

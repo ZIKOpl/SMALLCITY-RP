@@ -1,0 +1,58 @@
+[
+  {
+    "id": "1",
+    "name": "Police Nationale",
+    "description": "Force de l'ordre de SmallCity",
+    "image": "https://img.gta5-mods.com/q75/images/improved-vanilla-lspd-male-cops-los-santos-police-department/5829a5-20191212014832_1.jpg",
+    "discord": "https://discord.gg/police",
+    "type": "legal"
+  },
+  {
+    "id": "1",
+    "name": "Police Nationale",
+    "description": "Force de l'ordre de SmallCity",
+    "image": "https://img.gta5-mods.com/q75/images/improved-vanilla-lspd-male-cops-los-santos-police-department/5829a5-20191212014832_1.jpg",
+    "discord": "https://discord.gg/police",
+    "type": "legal"
+  },
+  {
+    "id": "1",
+    "name": "police",
+    "description": "Force de l'ordre de SmallCity",
+    "image": "https://img.gta5-mods.com/q75/images/improved-vanilla-lspd-male-cops-los-santos-police-department/5829a5-20191212014832_1.jpg",
+    "discord": "https://discord.gg/police",
+    "type": "legal"
+  },
+  {
+    "id": "2",
+    "name": "Les Serpents",
+    "description": "Gang du quartier Sud",
+    "image": "https://i.ytimg.com/vi/Vl23JrJ3k_Y/maxresdefault.jpg",
+    "discord": "https://i.ytimg.com/vi/Vl23JrJ3k_Y/maxresdefault.jpg",
+    "type": "illegal"
+  },
+  {
+    "id": "2",
+    "name": "Les Serpents",
+    "description": "Gang du quartier Sud",
+    "image": "https://i.ytimg.com/vi/Vl23JrJ3k_Y/maxresdefault.jpg",
+    "discord": "https://i.ytimg.com/vi/Vl23JrJ3k_Y/maxresdefault.jpg",
+    "type": "illegal"
+  },
+  {
+    "id": "2",
+    "name": "Les Serpents",
+    "description": "Gang du quartier Sud",
+    "image": "https://i.ytimg.com/vi/Vl23JrJ3k_Y/maxresdefault.jpg",
+    "discord": "https://i.ytimg.com/vi/Vl23JrJ3k_Y/maxresdefault.jpg",
+    "type": "illegal"
+  },
+  {
+    "id": "2",
+    "name": "Les Serpents",
+    "description": "Gang du quartier Sud",
+    "image": "https://i.ytimg.com/vi/Vl23JrJ3k_Y/maxresdefault.jpg",
+    "discord": "https://i.ytimg.com/vi/Vl23JrJ3k_Y/maxresdefault.jpg",
+    "type": "illegal"
+  }
+]

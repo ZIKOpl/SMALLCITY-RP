@@ -376,10 +376,17 @@ function reorganizeRule() {
     
     let options = '';
     categories.forEach(cat => {
-        options += `<label class="checkbox-label">
-            <input type="radio" name="targetCat" value="${cat}" ${cat === currentCat ? 'checked' : ''}>
-            <span>${cat}</span>
-        </label>`;
+        const isCurrent = cat === currentCat;
+        const icon = isCurrent ? 'fa-folder-open' : 'fa-folder';
+        const currentClass = isCurrent ? ' current-category' : '';
+        
+        options += `
+            <label class="reorganize-option${currentClass}">
+                <input type="radio" name="targetCat" value="${cat}" ${isCurrent ? 'checked' : ''}>
+                <span class="reorganize-option-label">${cat}</span>
+                <i class="fa-solid ${icon} reorganize-option-icon"></i>
+            </label>
+        `;
     });
     
     const modal = document.getElementById('modalReorganize');
@@ -542,9 +549,17 @@ async function delFaction(gridId, index) {
 /* --- NAV / THEME --- */
 function switchPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    
+    const targetPage = document.getElementById(id);
+    if (targetPage) {
+        targetPage.classList.add('active');
+    }
+    
     document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
-    event.target.classList.add('active');
+    
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
 
     const body = document.body;
     body.classList.remove('theme-green', 'theme-red');
@@ -821,5 +836,231 @@ function updateUserStats() {
     document.getElementById('blockedCount').textContent = stats.refused;
 }
 
+/* =============================================
+   SYSTÈME IMPORT/EXPORT JSON
+============================================= */
+
+let currentImportType = null; // 'rules', 'legal', 'illegal'
+
+// EXPORT JSON
+function exportJSON(type) {
+    if (!currentUser?.isAdmin) return;
+    
+    let dataToExport, filename;
+    
+    if (type === 'rules') {
+        dataToExport = data.rules;
+        filename = 'reglement-smallcity.json';
+    } else if (type === 'legal') {
+        dataToExport = data.legal;
+        filename = 'entreprises-smallcity.json';
+    } else if (type === 'illegal') {
+        dataToExport = data.illegal;
+        filename = 'groupes-illegaux-smallcity.json';
+    }
+    
+    // Créer le fichier JSON
+    const jsonString = JSON.stringify(dataToExport, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    // Télécharger
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    toastSuccess('Export réussi', `${filename} téléchargé avec succès !`);
+}
+
+// OUVRIR MODAL IMPORT
+function openImportModal(type) {
+    if (!currentUser?.isAdmin) return;
+    
+    currentImportType = type;
+    document.getElementById('importJSONInput').value = '';
+    document.getElementById('importPreview').style.display = 'none';
+    document.getElementById('modalImportJSON').classList.remove('hidden');
+    
+    // Mettre à jour le titre selon le type
+    const titles = {
+        'rules': 'Règlement',
+        'legal': 'Entreprises',
+        'illegal': 'Groupes Illégaux'
+    };
+    
+    document.querySelector('#modalImportJSON .import-subtitle strong').textContent = titles[type];
+}
+
+// FERMER MODAL IMPORT
+function closeImportModal() {
+    document.getElementById('modalImportJSON').classList.add('hidden');
+    currentImportType = null;
+}
+
+// DRAG & DROP
+const fileDropZone = document.getElementById('fileDropZone');
+
+if (fileDropZone) {
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        fileDropZone.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+        fileDropZone.addEventListener(eventName, () => {
+            fileDropZone.classList.add('drag-over');
+        });
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        fileDropZone.addEventListener(eventName, () => {
+            fileDropZone.classList.remove('drag-over');
+        });
+    });
+    
+    fileDropZone.addEventListener('drop', handleDrop);
+}
+
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    if (files.length > 0) {
+        handleFiles(files[0]);
+    }
+}
+
+function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if (file) {
+        handleFiles(file);
+    }
+}
+
+function handleFiles(file) {
+    if (file.type !== 'application/json') {
+        toastError('Erreur', 'Le fichier doit être au format .json');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const content = e.target.result;
+        document.getElementById('importJSONInput').value = content;
+        previewJSON(content);
+    };
+    reader.readAsText(file);
+}
+
+// PRÉVISUALISATION JSON
+document.getElementById('importJSONInput')?.addEventListener('input', (e) => {
+    previewJSON(e.target.value);
+});
+
+function previewJSON(jsonString) {
+    const preview = document.getElementById('importPreview');
+    const previewContent = document.getElementById('previewContent');
+    
+    if (!jsonString.trim()) {
+        preview.style.display = 'none';
+        return;
+    }
+    
+    try {
+        const parsed = JSON.parse(jsonString);
+        let html = '';
+        
+        if (currentImportType === 'rules') {
+            const catCount = Object.keys(parsed).length;
+            let totalRules = 0;
+            Object.values(parsed).forEach(rules => totalRules += rules.length);
+            
+            html = `
+                <div class="preview-stat">
+                    <i class="fa-solid fa-folder"></i>
+                    <span><strong>${catCount}</strong> catégories</span>
+                </div>
+                <div class="preview-stat">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <span><strong>${totalRules}</strong> règles au total</span>
+                </div>
+            `;
+        } else {
+            html = `
+                <div class="preview-stat">
+                    <i class="fa-solid fa-building"></i>
+                    <span><strong>${parsed.length}</strong> ${currentImportType === 'legal' ? 'entreprises' : 'groupes'}</span>
+                </div>
+            `;
+        }
+        
+        previewContent.innerHTML = html;
+        preview.style.display = 'block';
+    } catch (e) {
+        previewContent.innerHTML = `
+            <div class="preview-error">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>JSON invalide : ${e.message}</span>
+            </div>
+        `;
+        preview.style.display = 'block';
+    }
+}
+
+// CONFIRMER IMPORT
+async function confirmImportJSON() {
+    const jsonString = document.getElementById('importJSONInput').value.trim();
+    
+    if (!jsonString) {
+        toastError('Erreur', 'Aucune donnée à importer');
+        return;
+    }
+    
+    try {
+        const parsed = JSON.parse(jsonString);
+        
+        // Validation selon le type
+        if (currentImportType === 'rules' && typeof parsed !== 'object') {
+            throw new Error('Le JSON doit être un objet pour le règlement');
+        }
+        if ((currentImportType === 'legal' || currentImportType === 'illegal') && !Array.isArray(parsed)) {
+            throw new Error('Le JSON doit être un tableau pour les factions');
+        }
+        
+        // Confirmation
+        if (!await customConfirm('⚠️ Remplacer toutes les données actuelles par ce JSON ?')) {
+            return;
+        }
+        
+        // Mise à jour des données
+        if (currentImportType === 'rules') {
+            data.rules = parsed;
+            await pushData('rules', data.rules);
+            renderSidebar();
+            toastSuccess('Import réussi', `${Object.keys(parsed).length} catégories importées`);
+        } else if (currentImportType === 'legal') {
+            data.legal = parsed;
+            await pushData('factions', [...data.legal, ...data.illegal]);
+            renderLegal();
+            toastSuccess('Import réussi', `${parsed.length} entreprises importées`);
+        } else if (currentImportType === 'illegal') {
+            data.illegal = parsed;
+            await pushData('factions', [...data.legal, ...data.illegal]);
+            renderIllegal();
+            toastSuccess('Import réussi', `${parsed.length} groupes importés`);
+        }
+        
+        closeImportModal();
+    } catch (e) {
+        toastError('Erreur d\'import', e.message);
+    }
+}
 /* --- INIT --- */
 init();

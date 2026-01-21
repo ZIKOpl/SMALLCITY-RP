@@ -752,7 +752,7 @@ function renderUsers() {
                     ${user.status !== 'admin' ? `
                         <select onchange="changeUserStatus('${user.id}', this.value)" class="status-select">
                             <option value="">Action...</option>
-                            <option value="approved">✅ Approuver</option>
+                            <option value="approved">✅ Éditeur</option>
                             <option value="refused">❌ Refuser</option>
                         </select>
                     ` : '<span class="admin-badge">👑 Admin</span>'}
@@ -771,7 +771,7 @@ function renderUsers() {
 function getStatusInfo(status) {
     const statusMap = {
         'admin': '👑 Administrateur',
-        'approved': '✅ Approuvé',
+        'approved': '✅ Éditeur',
         'pending': '⏳ En attente',
         'refused': '❌ Refusé'
     };

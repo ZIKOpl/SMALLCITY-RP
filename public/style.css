@@ -144,6 +144,7 @@ main::before { content: ""; display: block; height: 120px; width: 100%; }
     border-right: 1px solid rgba(255, 255, 255, 0.06);
     padding: 20px 0;
     overflow-y: auto;
+    overflow-x: hidden;
     flex-shrink: 0;
     position: relative;
 }
@@ -231,6 +232,7 @@ main::before { content: ""; display: block; height: 120px; width: 100%; }
     padding: 6px;
     z-index: 100;
     min-width: 180px;
+    max-width: 220px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
@@ -518,7 +520,17 @@ main::before { content: ""; display: block; height: 120px; width: 100%; }
 
 /* MODALS */
 .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 2000; display: flex; align-items: center; justify-content: center; }
-.modal-box { background: #111; border: 1px solid rgba(255,255,255,0.1); padding: 40px; border-radius: var(--radius); width: 100%; max-width: 500px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
+.modal-box { 
+    background: #111; 
+    border: 1px solid rgba(255,255,255,0.1); 
+    padding: 40px; 
+    border-radius: var(--radius); 
+    width: 90%; 
+    max-width: 500px; 
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6); 
+}
 .modal-box h3 { margin-bottom: 20px; }
 
 input, textarea, select { width: 100%; padding: 14px; background: #0a0a0c; border: 1px solid #222; color: white; border-radius: 8px; font-size: 0.95rem; outline: none; margin-bottom: 15px; font-family: var(--font-main); transition: 0.3s; }
@@ -537,11 +549,38 @@ input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3p
     .docs-sidebar { width: 100%; max-height: 300px; border-right: none; border-bottom: 1px solid #333; } 
 }
 @media(max-width: 768px) {
+    .container { padding: 0 20px; }
     .header { padding: 0 20px; } 
-    .flex-header { flex-direction: column; gap: 15px; height: auto; padding: 15px 0; }
-    .nav { width: 100%; justify-content: space-between; gap: 5px; }
+    .flex-header { 
+        flex-direction: column; 
+        gap: 15px; 
+        height: auto; 
+        padding: 15px 0; 
+    }
+    .nav { 
+        width: 100%; 
+        justify-content: space-around; 
+        gap: 5px; 
+        flex-wrap: wrap;
+    }
+    .nav a {
+        font-size: 0.85rem;
+        padding: 6px 8px;
+    }
     .doc-display { padding: 30px 20px; }
-    main::before { height: 220px; }
+    main::before { height: 180px; }
+    .modal-box {
+        width: 95%;
+        padding: 24px;
+        max-height: 85vh;
+    }
+    .import-header,
+    .import-footer {
+        padding: 20px 24px;
+    }
+    .import-body {
+        padding: 20px 24px;
+    }
 }
 
 /* =============================================

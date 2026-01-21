@@ -1047,47 +1047,73 @@ async function confirmImportJSON() {
 }
 
 /* =============================================
-   COMPTEUR JOUEURS FIVEM - À activer plus tard
+   MODAL NEWSLETTER
+============================================= */
+
+function openNewsletterModal() {
+    document.getElementById('modalNewsletter').classList.remove('hidden');
+    document.getElementById('newsletterForm').style.display = 'block';
+    document.getElementById('newsletterSuccess').classList.add('hidden');
+    // Reset form
+    document.getElementById('newsletterForm').reset();
+}
+
+function closeNewsletterModal() {
+    document.getElementById('modalNewsletter').classList.add('hidden');
+}
+
+async function submitNewsletter(event) {
+    event.preventDefault();
+    
+    const discord = document.getElementById('newsletterDiscord').value;
+    const email = document.getElementById('newsletterEmail').value;
+    
+    try {
+        // Enregistrer dans le backend
+        const response = await fetch(`${API_URL}/api/newsletter`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ discord, email, subscribedAt: new Date().toISOString() })
+        });
+        
+        if (response.ok) {
+            // Afficher le message de succès
+            document.getElementById('newsletterForm').style.display = 'none';
+            document.getElementById('newsletterSuccess').classList.remove('hidden');
+            
+            toastSuccess('Inscription réussie !', `Vous serez notifié sur Discord dès l'ouverture.`);
+        } else {
+            toastError('Erreur', 'Une erreur est survenue. Réessayez plus tard.');
+        }
+    } catch (error) {
+        console.error('Erreur inscription newsletter:', error);
+        toastError('Erreur', 'Impossible de s\'inscrire pour le moment.');
+    }
+}
+
+/* =============================================
+   COMPTEUR JOUEURS FIVEM (à activer plus tard)
 ============================================= */
 
 async function updatePlayerCount() {
-    // ⚠️ DÉSACTIVÉ POUR L'INSTANT - À activer quand le serveur sera ouvert
+    // ⚠️ DÉSACTIVÉ - À activer quand le serveur sera ouvert
     return;
     
     /*
-    // Pour activer plus tard, décommentez ce code :
-    
     try {
-        const response = await fetch('VOTRE_IP_SERVEUR:30120/players.json');
+        const response = await fetch('VOTRE_IP:30120/players.json');
         const players = await response.json();
         
-        const countElement = document.getElementById('playerCount');
-        countElement.innerHTML = `${players.length}/64`; // Ajustez 64 selon votre max
-        
-        // Retirer le badge "Bientôt"
-        countElement.classList.remove('coming-soon-badge');
+        document.getElementById('playerCount').innerHTML = `${players.length}/64`;
     } catch (error) {
-        console.error('Erreur récupération joueurs:', error);
+        console.error('Erreur:', error);
         document.getElementById('playerCount').innerHTML = '<span class="coming-soon-badge">Bientôt</span>';
     }
     */
 }
 
-// Mettre à jour toutes les 30 secondes (quand le serveur sera ouvert)
+// Mettre à jour toutes les 30 secondes (quand actif)
 // setInterval(updatePlayerCount, 30000);
 
-// Fonction pour activer le bouton "Jouer" (quand le serveur sera ouvert)
-function enablePlayButton() {
-    const playBtn = document.querySelector('.btn-play');
-    playBtn.classList.remove('btn-disabled');
-    playBtn.classList.add('active');
-    playBtn.disabled = false;
-    playBtn.onclick = () => {
-        // Lien FiveM à ajouter
-        window.location.href = 'fivem://connect/VOTRE_IP:PORT';
-    };
-}
-
-// Pour activer plus tard, appelez : enablePlayButton();
 /* --- INIT --- */
 init();

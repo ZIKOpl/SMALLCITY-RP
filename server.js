@@ -8,7 +8,7 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 /* =========================
    CRÉATION DU DOSSIER DATA
@@ -101,6 +101,29 @@ app.use(passport.session());
 
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((obj, done) => done(null, obj));
+
+// Vérification des variables d'environnement
+const requiredEnvVars = [
+    'DISCORD_CLIENT_ID',
+    'DISCORD_CLIENT_SECRET', 
+    'DISCORD_CALLBACK_URL',
+    'ADMIN_DISCORD_ID'
+];
+
+const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+if (missingVars.length > 0) {
+    console.error('❌ ERREUR : Variables d\'environnement manquantes :');
+    missingVars.forEach(varName => {
+        console.error(`   - ${varName}`);
+    });
+    console.error('\n📋 Variables actuellement définies :');
+    console.error(`   DISCORD_CLIENT_ID: ${process.env.DISCORD_CLIENT_ID ? '✅ Définie' : '❌ Manquante'}`);
+    console.error(`   DISCORD_CLIENT_SECRET: ${process.env.DISCORD_CLIENT_SECRET ? '✅ Définie' : '❌ Manquante'}`);
+    console.error(`   DISCORD_CALLBACK_URL: ${process.env.DISCORD_CALLBACK_URL ? '✅ Définie' : '❌ Manquante'}`);
+    console.error(`   ADMIN_DISCORD_ID: ${process.env.ADMIN_DISCORD_ID ? '✅ Définie' : '❌ Manquante'}`);
+    process.exit(1);
+}
 
 passport.use(new DiscordStrategy({
     clientID: process.env.DISCORD_CLIENT_ID,

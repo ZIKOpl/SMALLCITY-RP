@@ -44,65 +44,18 @@
             <div class="hero-badge">REJOIGNEZ NOUS</div>
             <h1 class="shimmer-text">Redéfinissez Votre <span class="text-gradient">Avenir</span></h1>
             <p class="hero-desc">SmallCity RP n'est pas juste un serveur, c'est une communauté. Une économie stable, une administration impartiale et des dizaines de possibilités.</p>
-<div class="hero-actions">
-    <button class="btn btn-glow" onclick="switchPage('rules')">
-        <i class="fa-solid fa-book-open"></i> Règlement
-    </button>
-    <a href="https://discord.gg/SmallCity" target="_blank" class="btn btn-discord">
-        <i class="fa-brands fa-discord"></i> Discord
-    </a>
-    <button class="btn btn-play btn-disabled" disabled>
-        <i class="fa-solid fa-gamepad"></i> Jouer à SmallCity
-        <span class="btn-coming-soon">Bientôt</span>
-    </button>
-    <button class="btn btn-newsletter" onclick="openNewsletterModal()">
-        <i class="fa-solid fa-bell"></i> Me prévenir
-    </button>
-</div>
+            <div class="hero-actions">
+                <button class="btn btn-glow" onclick="switchPage('rules')"><i class="fa-solid fa-book-open"></i> Règlement</button>
+                <a href="https://discord.gg/SmallCity" target="_blank" class="btn btn-discord"><i class="fa-brands fa-discord"></i> Discord</a>
+            </div>
         </div>
 
         <!-- STATS -->
-<!-- STATS -->
-<div class="stats-container">
-    <div class="stat-item">
-        <div class="stat-value">24/7</div>
-        <div class="stat-label">Uptime</div>
-    </div>
-    <div class="stat-item stat-players">
-        <div class="stat-value" id="playerCount">
-            <span class="coming-soon-badge">Bientôt</span>
+        <div class="stats-container">
+            <div class="stat-item"><div class="stat-value">24/7</div><div class="stat-label">Uptime</div></div>
+            <div class="stat-item"><div class="stat-value">SMALL CITY</div><div class="stat-label">LE RETOUR</div></div>
+            <div class="stat-item"><div class="stat-value">STAFF</div><div class="stat-label">À L'ÉCOUTE</div></div>
         </div>
-        <div class="stat-label">Joueurs en ligne</div>
-    </div>
-    <div class="stat-item">
-        <div class="stat-value">STAFF</div>
-        <div class="stat-label">À L'ÉCOUTE</div>
-    </div>
-</div>
-
-<!-- Après les stats utilisateurs -->
-<div class="newsletter-send-section" style="margin-top: 40px;">
-    <div class="newsletter-send-card">
-        <div class="newsletter-send-header">
-            <h3><i class="fa-solid fa-paper-plane"></i> Envoyer la Newsletter</h3>
-            <p>Notifier tous les abonnés de l'ouverture du serveur</p>
-        </div>
-        <div class="newsletter-send-body">
-            <textarea 
-                id="newsletterMessage" 
-                placeholder="Message à envoyer à tous les abonnés..."
-                rows="5"
-            >🎉 Le serveur SmallCity RP est maintenant OUVERT !
-
-Rejoignez-nous dès maintenant et profitez de votre bonus de bienvenue exclusif.
-
-Cliquez sur le bouton ci-dessous pour vous connecter.</textarea>
-            <button class="btn btn-glow" onclick="sendNewsletterToAll()">
-                <i class="fa-solid fa-rocket"></i> Envoyer à tous les abonnés
-            </button>
-        </div>
-    </div>
-</div>
 
         <div class="features-grid">
             <div class="feature-card">
@@ -367,89 +320,6 @@ Cliquez sur le bouton ci-dessous pour vous connecter.</textarea>
                 <button class="btn btn-secondary" onclick="closeImportModal()">Annuler</button>
                 <button class="btn btn-glow" onclick="confirmImportJSON()">
                     <i class="fa-solid fa-check"></i> Importer
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- MODAL NEWSLETTER -->
-<div id="modalNewsletter" class="modal hidden">
-    <div class="modal-box newsletter-modal">
-        <div class="newsletter-header">
-            <div class="newsletter-icon">
-                <i class="fa-solid fa-rocket"></i>
-            </div>
-            <h3>Soyez prévenu du lancement !</h3>
-            <p class="newsletter-subtitle">Recevez une notification dès l'ouverture du serveur</p>
-        </div>
-        
-        <div class="newsletter-body">
-            <div class="newsletter-benefits">
-                <div class="benefit-item">
-                    <i class="fa-solid fa-check-circle"></i>
-                    <span>Accès prioritaire au lancement</span>
-                </div>
-                <div class="benefit-item">
-                    <i class="fa-solid fa-gift"></i>
-                    <span>Bonus de bienvenue exclusif</span>
-                </div>
-                <div class="benefit-item">
-                    <i class="fa-solid fa-crown"></i>
-                    <span>Rôle Discord spécial "Early Access"</span>
-                </div>
-            </div>
-            
-            <form id="newsletterForm" onsubmit="submitNewsletter(event)">
-                <div class="form-group">
-                    <label for="newsletterDiscord">
-                        <i class="fa-brands fa-discord"></i> Pseudo Discord
-                    </label>
-                    <input 
-                        type="text" 
-                        id="newsletterDiscord" 
-                        placeholder="exemple#1234" 
-                        required
-                    >
-                </div>
-                
-                <div class="form-group">
-                    <label for="newsletterEmail">
-                        <i class="fa-solid fa-envelope"></i> Email (optionnel)
-                    </label>
-                    <input 
-                        type="email" 
-                        id="newsletterEmail" 
-                        placeholder="votre@email.com"
-                    >
-                </div>
-                
-                <div class="newsletter-consent">
-                    <label class="checkbox-container">
-                        <input type="checkbox" id="newsletterConsent" required>
-                        <span class="checkmark"></span>
-                        <span class="consent-text">J'accepte de recevoir des notifications sur Discord</span>
-                    </label>
-                </div>
-                
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeNewsletterModal()">
-                        Annuler
-                    </button>
-                    <button type="submit" class="btn btn-glow">
-                        <i class="fa-solid fa-paper-plane"></i> M'inscrire
-                    </button>
-                </div>
-            </form>
-            
-            <div id="newsletterSuccess" class="newsletter-success hidden">
-                <div class="success-icon">
-                    <i class="fa-solid fa-check-circle"></i>
-                </div>
-                <h4>Inscription réussie !</h4>
-                <p>Vous serez notifié dès l'ouverture du serveur.</p>
-                <button class="btn btn-glow" onclick="closeNewsletterModal()">
-                    Parfait !
                 </button>
             </div>
         </div>

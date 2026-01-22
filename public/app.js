@@ -1115,5 +1115,42 @@ async function updatePlayerCount() {
 // Mettre à jour toutes les 30 secondes (quand actif)
 // setInterval(updatePlayerCount, 30000);
 
+/* =============================================
+   ENVOYER NEWSLETTER À TOUS
+============================================= */
+async function sendNewsletterToAll() {
+    const message = document.getElementById('newsletterMessage').value;
+    
+    if (!message.trim()) {
+        toastError('Erreur', 'Le message ne peut pas être vide');
+        return;
+    }
+    
+    if (!await customConfirm('Envoyer la newsletter à tous les abonnés ?')) {
+        return;
+    }
+    
+    toastInfo('Envoi en cours...', 'Cela peut prendre quelques minutes');
+    
+    try {
+        const response = await fetch(`${API_URL}/api/newsletter/send`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ message })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            toastSuccess('Newsletter envoyée !', `${result.sent}/${result.total} messages envoyés avec succès`);
+        } else {
+            toastError('Erreur', result.error || 'Erreur lors de l\'envoi');
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        toastError('Erreur', 'Impossible d\'envoyer la newsletter');
+    }
+}
 /* --- INIT --- */
 init();

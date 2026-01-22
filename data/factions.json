@@ -1,58 +1,210 @@
 [
   {
     "id": "1",
-    "name": "Police Nationale",
-    "description": "Force de l'ordre de SmallCity",
+    "name": "Police Nationale (LSPD)",
+    "description": "Force de l'ordre principale de SmallCity - Patrouilles, interventions, enquêtes",
     "image": "https://img.gta5-mods.com/q75/images/improved-vanilla-lspd-male-cops-los-santos-police-department/5829a5-20191212014832_1.jpg",
-    "discord": "https://discord.gg/police",
+    "discord": "https://discord.gg/smallcity-police",
+    "type": "legal"
+  },
+  {
+    "id": "2",
+    "name": "Services Médicaux d'Urgence (EMS)",
+    "description": "Secours et soins d'urgence - Ambulanciers, médecins, chirurgiens",
+    "image": "https://img.gta5-mods.com/q75/images/improved-vanilla-lspd-male-cops-los-santos-police-department/5829a5-20191212014832_1.jpg",
+    "discord": "https://discord.gg/smallcity-ems",
+    "type": "legal"
+  },
+  {
+    "id": "3",
+    "name": "Mécanique Los Santos",
+    "description": "Garage automobile - Réparations, personnalisations, dépannage 24/7",
+    "image": "https://img.gta5-mods.com/q75/images/improved-vanilla-lspd-male-cops-los-santos-police-department/5829a5-20191212014832_1.jpg",
+    "discord": "https://discord.gg/smallcity-mecano",
+    "type": "legal"
+  },
+  {
+    "id": "4",
+    "name": "Burger Shot",
+    "description": "Restaurant fast-food emblématique - Burgers, frites, milkshakes",
+    "image": "https://img.gta5-mods.com/q75/images/improved-vanilla-lspd-male-cops-los-santos-police-department/5829a5-20191212014832_1.jpg",
+    "discord": "https://discord.gg/smallcity-burgershot",
+    "type": "legal"
+  },
+  {
+    "id": "5",
+    "name": "Vanilla Unicorn",
+    "description": "Club de divertissement pour adultes - Bar, spectacles, soirées privées",
+    "image": "https://img.gta5-mods.com/q75/images/improved-vanilla-lspd-male-cops-los-santos-police-department/5829a5-20191212014832_1.jpg",
+    "discord": "https://discord.gg/smallcity-unicorn",
+    "type": "legal"
+  },
+  {
+    "id": "6",
+    "name": "Bennys Motor Works",
+    "description": "Customisation de luxe - Tuning, modifications premium, véhicules de collection",
+    "image": "https://img.gta5-mods.com/q75/images/improved-vanilla-lspd-male-cops-los-santos-police-department/5829a5-20191212014832_1.jpg",
+    "discord": "https://discord.gg/smallcity-bennys",
+    "type": "legal"
+  },
+  {
+    "id": "7",
+    "name": "Weazel News",
+    "description": "Média d'information - Journalistes, reporters, cameramen, diffusion d'actualités",
+    "image": "https://img.gta5-mods.com/q75/images/improved-vanilla-lspd-male-cops-los-santos-police-department/5829a5-20191212014832_1.jpg",
+    "discord": "https://discord.gg/smallcity-news",
+    "type": "legal"
+  },
+  {
+    "id": "9",
+    "name": "Taxi Downtown",
+    "description": "Compagnie de taxis - Transport de passagers, courses urbaines",
+    "image": "https://img.gta5-mods.com/q75/images/improved-vanilla-lspd-male-cops-los-santos-police-department/5829a5-20191212014832_1.jpg",
+    "discord": "https://discord.gg/smallcity-taxi",
+    "type": "legal"
+  },
+  {
+    "id": "10",
+    "name": "Dynasty 8 Real Estate",
+    "description": "Agence immobilière - Vente et location de propriétés, gestion immobilière",
+    "image": "https://img.gta5-mods.com/q75/images/improved-vanilla-lspd-male-cops-los-santos-police-department/5829a5-20191212014832_1.jpg",
+    "discord": "https://discord.gg/smallcity-realestate",
+    "type": "legal"
+  },
+  {
+    "id": "11",
+    "name": "Pearls Seafood Restaurant",
+    "description": "Restaurant gastronomique - Fruits de mer, cuisine raffinée, événements",
+    "image": "https://img.gta5-mods.com/q75/images/improved-vanilla-lspd-male-cops-los-santos-police-department/5829a5-20191212014832_1.jpg",
+    "discord": "https://discord.gg/smallcity-pearls",
+    "type": "legal"
+  },
+  {
+    "id": "12",
+    "name": "Maze Bank",
+    "description": "Institution bancaire - Comptes, prêts, investissements, coffres-forts",
+    "image": "https://img.gta5-mods.com/q75/images/improved-vanilla-lspd-male-cops-los-santos-police-department/5829a5-20191212014832_1.jpg",
+    "discord": "https://discord.gg/smallcity-bank",
     "type": "legal"
   },
   {
     "id": "1",
-    "name": "Police Nationale",
-    "description": "Force de l'ordre de SmallCity",
-    "image": "https://img.gta5-mods.com/q75/images/improved-vanilla-lspd-male-cops-los-santos-police-department/5829a5-20191212014832_1.jpg",
-    "discord": "https://discord.gg/police",
-    "type": "legal"
-  },
-  {
-    "id": "1",
-    "name": "police",
-    "description": "Force de l'ordre de SmallCity",
-    "image": "https://img.gta5-mods.com/q75/images/improved-vanilla-lspd-male-cops-los-santos-police-department/5829a5-20191212014832_1.jpg",
-    "discord": "https://discord.gg/police",
-    "type": "legal"
-  },
-  {
-    "id": "2",
-    "name": "Les Serpents",
-    "description": "Gang du quartier Sud",
-    "image": "https://i.ytimg.com/vi/Vl23JrJ3k_Y/maxresdefault.jpg",
-    "discord": "https://i.ytimg.com/vi/Vl23JrJ3k_Y/maxresdefault.jpg",
+    "name": "The Families",
+    "description": "Gang historique de Grove Street - Contrôle du sud de LS, trafic de drogue",
+    "image": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/5777b235-b702-4f4d-8a42-511f99ace749/dgw7r56-77457a13-b17a-4d60-a516-61b7c5f00816.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzU3NzdiMjM1LWI3MDItNGY0ZC04YTQyLTUxMWY5OWFjZTc0OVwvZGd3N3I1Ni03NzQ1N2ExMy1iMTdhLTRkNjAtYTUxNi02MWI3YzVmMDA4MTYucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.J794Hp6YadzpSBCXXAThZSew-2ZJCkGUMuk4mDZ7DBM",
+    "discord": "https://discord.gg/smallcity-families",
     "type": "illegal"
   },
   {
     "id": "2",
-    "name": "Les Serpents",
-    "description": "Gang du quartier Sud",
-    "image": "https://i.ytimg.com/vi/Vl23JrJ3k_Y/maxresdefault.jpg",
-    "discord": "https://i.ytimg.com/vi/Vl23JrJ3k_Y/maxresdefault.jpg",
+    "name": "Los Santos Vagos",
+    "description": "Gang latino dominant - Territoire Est, trafic d'armes et stupéfiants",
+    "image": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/5777b235-b702-4f4d-8a42-511f99ace749/dgw7r56-77457a13-b17a-4d60-a516-61b7c5f00816.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzU3NzdiMjM1LWI3MDItNGY0ZC04YTQyLTUxMWY5OWFjZTc0OVwvZGd3N3I1Ni03NzQ1N2ExMy1iMTdhLTRkNjAtYTUxNi02MWI3YzVmMDA4MTYucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.J794Hp6YadzpSBCXXAThZSew-2ZJCkGUMuk4mDZ7DBM",
+    "discord": "https://discord.gg/smallcity-vagos",
     "type": "illegal"
   },
   {
-    "id": "2",
-    "name": "Les Serpents",
-    "description": "Gang du quartier Sud",
-    "image": "https://i.ytimg.com/vi/Vl23JrJ3k_Y/maxresdefault.jpg",
-    "discord": "https://i.ytimg.com/vi/Vl23JrJ3k_Y/maxresdefault.jpg",
+    "id": "3",
+    "name": "Marabunta Grande",
+    "description": "Organisation criminelle violente - Extorsion, kidnapping, trafic international",
+    "image": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/5777b235-b702-4f4d-8a42-511f99ace749/dgw7r56-77457a13-b17a-4d60-a516-61b7c5f00816.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzU3NzdiMjM1LWI3MDItNGY0ZC04YTQyLTUxMWY5OWFjZTc0OVwvZGd3N3I1Ni03NzQ1N2ExMy1iMTdhLTRkNjAtYTUxNi02MWI3YzVmMDA4MTYucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.J794Hp6YadzpSBCXXAThZSew-2ZJCkGUMuk4mDZ7DBM",
+    "discord": "https://discord.gg/smallcity-marabunta",
     "type": "illegal"
   },
   {
-    "id": "2",
-    "name": "Les Serpents",
-    "description": "Gang du quartier Sud",
-    "image": "https://i.ytimg.com/vi/Vl23JrJ3k_Y/maxresdefault.jpg",
-    "discord": "https://i.ytimg.com/vi/Vl23JrJ3k_Y/maxresdefault.jpg",
+    "id": "4",
+    "name": "The Ballas",
+    "description": "Gang rival des Families - Secteur nord, guerre de territoire, crack et armes",
+    "image": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/5777b235-b702-4f4d-8a42-511f99ace749/dgw7r56-77457a13-b17a-4d60-a516-61b7c5f00816.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzU3NzdiMjM1LWI3MDItNGY0ZC04YTQyLTUxMWY5OWFjZTc0OVwvZGd3N3I1Ni03NzQ1N2ExMy1iMTdhLTRkNjAtYTUxNi02MWI3YzVmMDA4MTYucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.J794Hp6YadzpSBCXXAThZSew-2ZJCkGUMuk4mDZ7DBM",
+    "discord": "https://discord.gg/smallcity-ballas",
+    "type": "illegal"
+  },
+  {
+    "id": "5",
+    "name": "Cosa Nostra",
+    "description": "Mafia italienne traditionnelle - Racket, paris illégaux, blanchiment d'argent",
+    "image": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/5777b235-b702-4f4d-8a42-511f99ace749/dgw7r56-77457a13-b17a-4d60-a516-61b7c5f00816.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzU3NzdiMjM1LWI3MDItNGY0ZC04YTQyLTUxMWY5OWFjZTc0OVwvZGd3N3I1Ni03NzQ1N2ExMy1iMTdhLTRkNjAtYTUxNi02MWI3YzVmMDA4MTYucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.J794Hp6YadzpSBCXXAThZSew-2ZJCkGUMuk4mDZ7DBM",
+    "discord": "https://discord.gg/smallcity-mafia",
+    "type": "illegal"
+  },
+  {
+    "id": "6",
+    "name": "Lost MC",
+    "description": "Club de motards hors-la-loi - Trafic de méthamphétamine, vols, contrebande",
+    "image": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/5777b235-b702-4f4d-8a42-511f99ace749/dgw7r56-77457a13-b17a-4d60-a516-61b7c5f00816.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzU3NzdiMjM1LWI3MDItNGY0ZC04YTQyLTUxMWY5OWFjZTc0OVwvZGd3N3I1Ni03NzQ1N2ExMy1iMTdhLTRkNjAtYTUxNi02MWI3YzVmMDA4MTYucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.J794Hp6YadzpSBCXXAThZSew-2ZJCkGUMuk4mDZ7DBM",
+    "discord": "https://discord.gg/smallcity-lostmc",
+    "type": "illegal"
+  },
+  {
+    "id": "7",
+    "name": "Triades",
+    "description": "Organisation criminelle asiatique - Contrebande, jeux d'argent, trafic humain",
+    "image": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/5777b235-b702-4f4d-8a42-511f99ace749/dgw7r56-77457a13-b17a-4d60-a516-61b7c5f00816.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzU3NzdiMjM1LWI3MDItNGY0ZC04YTQyLTUxMWY5OWFjZTc0OVwvZGd3N3I1Ni03NzQ1N2ExMy1iMTdhLTRkNjAtYTUxNi02MWI3YzVmMDA4MTYucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.J794Hp6YadzpSBCXXAThZSew-2ZJCkGUMuk4mDZ7DBM",
+    "discord": "https://discord.gg/smallcity-triades",
+    "type": "illegal"
+  },
+  {
+    "id": "8",
+    "name": "Cartel de Sinaloa",
+    "description": "Cartel mexicain puissant - Import/export de cocaïne, corruption, violence",
+    "image": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/5777b235-b702-4f4d-8a42-511f99ace749/dgw7r56-77457a13-b17a-4d60-a516-61b7c5f00816.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzU3NzdiMjM1LWI3MDItNGY0ZC04YTQyLTUxMWY5OWFjZTc0OVwvZGd3N3I1Ni03NzQ1N2ExMy1iMTdhLTRkNjAtYTUxNi02MWI3YzVmMDA4MTYucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.J794Hp6YadzpSBCXXAThZSew-2ZJCkGUMuk4mDZ7DBM",
+    "discord": "https://discord.gg/smallcity-cartel",
+    "type": "illegal"
+  },
+  {
+    "id": "10",
+    "name": "Bratva",
+    "description": "Mafia russe organisée - Cybercriminalité, extorsion, trafic d'armes lourdes",
+    "image": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/5777b235-b702-4f4d-8a42-511f99ace749/dgw7r56-77457a13-b17a-4d60-a516-61b7c5f00816.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzU3NzdiMjM1LWI3MDItNGY0ZC04YTQyLTUxMWY5OWFjZTc0OVwvZGd3N3I1Ni03NzQ1N2ExMy1iMTdhLTRkNjAtYTUxNi02MWI3YzVmMDA4MTYucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.J794Hp6YadzpSBCXXAThZSew-2ZJCkGUMuk4mDZ7DBM",
+    "discord": "https://discord.gg/smallcity-bratva",
+    "type": "illegal"
+  },
+  {
+    "id": "11",
+    "name": "Blood Street",
+    "description": "Gang de rue agressif - Petite criminalité, vols à main armée, deals de rue",
+    "image": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/5777b235-b702-4f4d-8a42-511f99ace749/dgw7r56-77457a13-b17a-4d60-a516-61b7c5f00816.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzU3NzdiMjM1LWI3MDItNGY0ZC04YTQyLTUxMWY5OWFjZTc0OVwvZGd3N3I1Ni03NzQ1N2ExMy1iMTdhLTRkNjAtYTUxNi02MWI3YzVmMDA4MTYucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.J794Hp6YadzpSBCXXAThZSew-2ZJCkGUMuk4mDZ7DBM",
+    "discord": "https://discord.gg/smallcity-bloodstreet",
+    "type": "illegal"
+  },
+  {
+    "id": "12",
+    "name": "Yakuza",
+    "description": "Syndicat du crime japonais - Code d'honneur strict, trafic, protection",
+    "image": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/5777b235-b702-4f4d-8a42-511f99ace749/dgw7r56-77457a13-b17a-4d60-a516-61b7c5f00816.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzU3NzdiMjM1LWI3MDItNGY0ZC04YTQyLTUxMWY5OWFjZTc0OVwvZGd3N3I1Ni03NzQ1N2ExMy1iMTdhLTRkNjAtYTUxNi02MWI3YzVmMDA4MTYucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.J794Hp6YadzpSBCXXAThZSew-2ZJCkGUMuk4mDZ7DBM",
+    "discord": "https://discord.gg/smallcity-yakuza",
+    "type": "illegal"
+  },
+  {
+    "id": "13",
+    "name": "Vercetti Crime Family",
+    "description": "Famille mafieuse influente - Casinos illégaux, construction, syndicats",
+    "image": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/5777b235-b702-4f4d-8a42-511f99ace749/dgw7r56-77457a13-b17a-4d60-a516-61b7c5f00816.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzU3NzdiMjM1LWI3MDItNGY0ZC04YTQyLTUxMWY5OWFjZTc0OVwvZGd3N3I1Ni03NzQ1N2ExMy1iMTdhLTRkNjAtYTUxNi02MWI3YzVmMDA4MTYucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.J794Hp6YadzpSBCXXAThZSew-2ZJCkGUMuk4mDZ7DBM",
+    "discord": "https://discord.gg/smallcity-vercetti",
+    "type": "illegal"
+  },
+  {
+    "id": "14",
+    "name": "Kkangpae",
+    "description": "Mafia coréenne moderne - Cybercriminalité, usure, paris sportifs truqués",
+    "image": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/5777b235-b702-4f4d-8a42-511f99ace749/dgw7r56-77457a13-b17a-4d60-a516-61b7c5f00816.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzU3NzdiMjM1LWI3MDItNGY0ZC04YTQyLTUxMWY5OWFjZTc0OVwvZGd3N3I1Ni03NzQ1N2ExMy1iMTdhLTRkNjAtYTUxNi02MWI3YzVmMDA4MTYucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.J794Hp6YadzpSBCXXAThZSew-2ZJCkGUMuk4mDZ7DBM",
+    "discord": "https://discord.gg/smallcity-kkangpae",
+    "type": "illegal"
+  },
+  {
+    "id": "15",
+    "name": "The Professionals",
+    "description": "Groupe de mercenaires d'élite - Braquages planifiés, vols de haut niveau",
+    "image": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/5777b235-b702-4f4d-8a42-511f99ace749/dgw7r56-77457a13-b17a-4d60-a516-61b7c5f00816.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzU3NzdiMjM1LWI3MDItNGY0ZC04YTQyLTUxMWY5OWFjZTc0OVwvZGd3N3I1Ni03NzQ1N2ExMy1iMTdhLTRkNjAtYTUxNi02MWI3YzVmMDA4MTYucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.J794Hp6YadzpSBCXXAThZSew-2ZJCkGUMuk4mDZ7DBM",
+    "discord": "https://discord.gg/smallcity-professionals",
+    "type": "illegal"
+  },
+  {
+    "id": "16",
+    "name": "Midnight Club",
+    "description": "Course de rue illégale - Paris sur courses, vol de véhicules de luxe",
+    "image": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/5777b235-b702-4f4d-8a42-511f99ace749/dgw7r56-77457a13-b17a-4d60-a516-61b7c5f00816.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzU3NzdiMjM1LWI3MDItNGY0ZC04YTQyLTUxMWY5OWFjZTc0OVwvZGd3N3I1Ni03NzQ1N2ExMy1iMTdhLTRkNjAtYTUxNi02MWI3YzVmMDA4MTYucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.J794Hp6YadzpSBCXXAThZSew-2ZJCkGUMuk4mDZ7DBM",
+    "discord": "https://discord.gg/smallcity-midnight",
     "type": "illegal"
   }
 ]

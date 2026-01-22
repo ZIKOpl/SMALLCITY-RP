@@ -8,7 +8,7 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 /* =========================
    CRÉATION DU DOSSIER DATA
@@ -82,6 +82,8 @@ app.use(cors({
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.set('trust proxy', 1);
+
 /* =========================
    SESSION & PASSPORT
 ========================= */
@@ -90,11 +92,13 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: { 
-        secure: false,
+        secure: true, // OBLIGATOIRE en HTTPS
         httpOnly: true,
+        sameSite: 'lax',
         maxAge: 24 * 60 * 60 * 1000
     }
 }));
+
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -199,7 +203,10 @@ app.get("/auth/discord/callback",
 );
 
 app.get("/auth/logout", (req, res) => {
-    req.logout(() => res.redirect("/"));
+    req.logout(err => {
+        if (err) return next(err);
+        res.redirect("/");
+    });
 });
 
 app.get("/auth/user", (req, res) => {

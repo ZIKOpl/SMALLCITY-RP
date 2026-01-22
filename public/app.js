@@ -56,7 +56,7 @@ function renderAuth() {
         if (currentUser.isEditor) {
             document.querySelectorAll('.editor-control').forEach(el => el.classList.remove('hidden'));
         } else {
-            document.querySelectorAll('.editor-control').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.editor-only').forEach(el => el.classList.add('hidden'));
         }
     }
 }
@@ -186,6 +186,25 @@ function toggleCatMenu(cat, triggerElement) {
             menu.style.right = '8px';
             menu.style.top = (rect.bottom - sidebarRect.top + sidebar.scrollTop + 4) + 'px';
         }
+    }
+}
+
+function closeCatMenus() {
+    document.querySelectorAll('.cat-dropdown').forEach(m => m.classList.add('hidden'));
+}
+
+// Fermer les menus si on clique ailleurs
+document.addEventListener('click', (e) => {
+    if(!e.target.closest('.cat-menu-trigger') && !e.target.closest('.cat-dropdown')) {
+        closeCatMenus();
+    }
+});
+
+function toggleCatMenu(cat) {
+    closeCatMenus();
+    const menu = document.getElementById(`catMenu-${cat}`);
+    if(menu) {
+        menu.classList.toggle('hidden');
     }
 }
 
@@ -1043,113 +1062,6 @@ async function confirmImportJSON() {
         closeImportModal();
     } catch (e) {
         toastError('Erreur d\'import', e.message);
-    }
-}
-
-/* =============================================
-   MODAL NEWSLETTER
-============================================= */
-
-function openNewsletterModal() {
-    document.getElementById('modalNewsletter').classList.remove('hidden');
-    document.getElementById('newsletterForm').style.display = 'block';
-    document.getElementById('newsletterSuccess').classList.add('hidden');
-    // Reset form
-    document.getElementById('newsletterForm').reset();
-}
-
-function closeNewsletterModal() {
-    document.getElementById('modalNewsletter').classList.add('hidden');
-}
-
-async function submitNewsletter(event) {
-    event.preventDefault();
-    
-    const discord = document.getElementById('newsletterDiscord').value;
-    const email = document.getElementById('newsletterEmail').value;
-    
-    try {
-        // Enregistrer dans le backend
-        const response = await fetch(`${API_URL}/api/newsletter`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ discord, email, subscribedAt: new Date().toISOString() })
-        });
-        
-        if (response.ok) {
-            // Afficher le message de succès
-            document.getElementById('newsletterForm').style.display = 'none';
-            document.getElementById('newsletterSuccess').classList.remove('hidden');
-            
-            toastSuccess('Inscription réussie !', `Vous serez notifié sur Discord dès l'ouverture.`);
-        } else {
-            toastError('Erreur', 'Une erreur est survenue. Réessayez plus tard.');
-        }
-    } catch (error) {
-        console.error('Erreur inscription newsletter:', error);
-        toastError('Erreur', 'Impossible de s\'inscrire pour le moment.');
-    }
-}
-
-/* =============================================
-   COMPTEUR JOUEURS FIVEM (à activer plus tard)
-============================================= */
-
-async function updatePlayerCount() {
-    // ⚠️ DÉSACTIVÉ - À activer quand le serveur sera ouvert
-    return;
-    
-    /*
-    try {
-        const response = await fetch('VOTRE_IP:30120/players.json');
-        const players = await response.json();
-        
-        document.getElementById('playerCount').innerHTML = `${players.length}/64`;
-    } catch (error) {
-        console.error('Erreur:', error);
-        document.getElementById('playerCount').innerHTML = '<span class="coming-soon-badge">Bientôt</span>';
-    }
-    */
-}
-
-// Mettre à jour toutes les 30 secondes (quand actif)
-// setInterval(updatePlayerCount, 30000);
-
-/* =============================================
-   ENVOYER NEWSLETTER À TOUS
-============================================= */
-async function sendNewsletterToAll() {
-    const message = document.getElementById('newsletterMessage').value;
-    
-    if (!message.trim()) {
-        toastError('Erreur', 'Le message ne peut pas être vide');
-        return;
-    }
-    
-    if (!await customConfirm('Envoyer la newsletter à tous les abonnés ?')) {
-        return;
-    }
-    
-    toastInfo('Envoi en cours...', 'Cela peut prendre quelques minutes');
-    
-    try {
-        const response = await fetch(`${API_URL}/api/newsletter/send`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ message })
-        });
-        
-        const result = await response.json();
-        
-        if (response.ok) {
-            toastSuccess('Newsletter envoyée !', `${result.sent}/${result.total} messages envoyés avec succès`);
-        } else {
-            toastError('Erreur', result.error || 'Erreur lors de l\'envoi');
-        }
-    } catch (error) {
-        console.error('Erreur:', error);
-        toastError('Erreur', 'Impossible d\'envoyer la newsletter');
     }
 }
 /* --- INIT --- */

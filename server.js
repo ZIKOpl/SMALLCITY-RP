@@ -6,7 +6,6 @@ const passport = require("passport");
 const DiscordStrategy = require("passport-discord").Strategy;
 const fs = require("fs");
 const path = require("path");
-const { client, sendNewsletterDM } = require('./bot');
 
 const app = express();
 const PORT = 3000;
@@ -245,86 +244,6 @@ app.post('/api/users/:id/status', (req, res) => {
         res.json({ success: true, user });
     } else {
         res.status(404).json({ error: 'Utilisateur non trouvé' });
-    }
-});
-
-/* =========================
-   NEWSLETTER
-========================= */
-app.get("/api/newsletter", (req, res) => {
-    if (!req.user || req.user.status !== 'admin') {
-        return res.status(403).json({ error: 'Accès refusé' });
-    }
-    sendFile(res, "newsletter");
-});
-
-app.post("/api/newsletter", async (req, res) => {
-    try {
-        const newsletterPath = path.join(dataDir, 'newsletter.json');
-        let subscribers = [];
-        
-        if (fs.existsSync(newsletterPath)) {
-            subscribers = JSON.parse(fs.readFileSync(newsletterPath, 'utf-8'));
-        }
-        
-        // Vérifier si déjà inscrit
-        const exists = subscribers.find(s => s.discord === req.body.discord);
-        if (exists) {
-            return res.status(409).json({ error: 'Déjà inscrit' });
-        }
-        
-        subscribers.push(req.body);
-        fs.writeFileSync(newsletterPath, JSON.stringify(subscribers, null, 2));
-        console.log(`✅ Nouvelle inscription newsletter: ${req.body.discord}`);
-        
-        res.json({ success: true });
-    } catch (error) {
-        console.error('❌ Erreur newsletter:', error);
-        res.status(500).json({ error: 'Erreur serveur' });
-    }
-});
-
-// NOUVELLE ROUTE - Envoyer newsletter à tous
-app.post("/api/newsletter/send", async (req, res) => {
-    if (!req.user || req.user.status !== 'admin') {
-        return res.status(403).json({ error: 'Accès refusé' });
-    }
-    
-    try {
-        const { message } = req.body;
-        const newsletterPath = path.join(dataDir, 'newsletter.json');
-        
-        if (!fs.existsSync(newsletterPath)) {
-            return res.status(404).json({ error: 'Aucun abonné' });
-        }
-        
-        const subscribers = JSON.parse(fs.readFileSync(newsletterPath, 'utf-8'));
-        const results = [];
-        
-        for (const sub of subscribers) {
-            const result = await sendNewsletterDM(sub.discord, message);
-            results.push({
-                discord: sub.discord,
-                ...result
-            });
-            
-            // Attendre 1 seconde entre chaque envoi (éviter rate limit)
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-        
-        const successCount = results.filter(r => r.success).length;
-        
-        res.json({
-            success: true,
-            total: subscribers.length,
-            sent: successCount,
-            failed: subscribers.length - successCount,
-            results
-        });
-        
-    } catch (error) {
-        console.error('❌ Erreur envoi newsletter:', error);
-        res.status(500).json({ error: 'Erreur serveur' });
     }
 });
 

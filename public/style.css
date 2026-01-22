@@ -1880,11 +1880,13 @@ footer::before {
 /* Bouton "Jouer" désactivé */
 .btn-play {
     position: relative;
-    background: linear-gradient(135deg, #1a1a1e, #25252a);
-    color: #666;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, #2a2a2e, #3a3a3e);
+    color: #fff;
+    border: 2px solid rgba(255, 255, 255, 0.2);
     cursor: not-allowed;
-    opacity: 0.6;
+    opacity: 0.7;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .btn-play:hover {
@@ -1894,38 +1896,45 @@ footer::before {
 
 .btn-coming-soon {
     position: absolute;
-    top: -8px;
-    right: -8px;
-    background: linear-gradient(135deg, #ffa502, #ff6348);
-    color: white;
-    font-size: 0.65rem;
-    padding: 3px 8px;
-    border-radius: 10px;
+    top: -10px;
+    right: -10px;
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    color: #000;
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    border-radius: 12px;
     font-weight: 700;
     letter-spacing: 0.5px;
-    box-shadow: 0 4px 12px rgba(255, 165, 2, 0.4);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.6);
     animation: bounceBtn 2s ease-in-out infinite;
 }
 
-@keyframes bounceBtn {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
+/* =============================================
+   BOUTON NEWSLETTER - VERSION OR
+============================================= */
+
+.btn-newsletter {
+    background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700);
+    background-size: 200% 200%;
+    color: #000;
+    font-weight: 700;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+    animation: goldShimmer 3s ease-in-out infinite;
+    border: 1px solid rgba(255, 215, 0, 0.3);
 }
 
-/* Bouton Newsletter */
-.btn-newsletter {
-    background: linear-gradient(135deg, #8b5cf6, #6366f1);
-    color: white;
-    box-shadow: 0 0 25px rgba(139, 92, 246, 0.3);
+@keyframes goldShimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
 }
 
 .btn-newsletter:hover {
     transform: translateY(-3px);
-    box-shadow: 0 0 40px rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 50px rgba(255, 215, 0, 0.8), 0 10px 30px rgba(255, 215, 0, 0.3);
 }
 
 /* =============================================
-   MODAL NEWSLETTER
+   MODAL NEWSLETTER - VERSION OR
 ============================================= */
 
 .newsletter-modal {
@@ -1936,8 +1945,8 @@ footer::before {
 
 .newsletter-header {
     padding: 40px;
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(99, 102, 241, 0.1));
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 193, 7, 0.1));
+    border-bottom: 1px solid rgba(255, 215, 0, 0.2);
     text-align: center;
     position: relative;
 }
@@ -1949,126 +1958,45 @@ footer::before {
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(to right, #8b5cf6, #6366f1);
+    background: linear-gradient(to right, #ffd700, #ffed4e, #ffd700);
 }
 
 .newsletter-icon {
     width: 80px;
     height: 80px;
     margin: 0 auto 20px;
-    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 2.5rem;
-    color: white;
-    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+    color: #000;
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
     animation: floatIcon 3s ease-in-out infinite;
 }
 
-@keyframes floatIcon {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-}
-
-.newsletter-header h3 {
-    font-size: 1.8rem;
-    margin-bottom: 12px;
-    color: #fff;
-}
-
-.newsletter-subtitle {
-    color: #999;
-    font-size: 0.95rem;
-    margin: 0;
-}
-
-.newsletter-body {
-    padding: 32px 40px;
-}
-
 .newsletter-benefits {
-    background: rgba(139, 92, 246, 0.05);
-    border: 1px solid rgba(139, 92, 246, 0.2);
+    background: rgba(255, 215, 0, 0.05);
+    border: 1px solid rgba(255, 215, 0, 0.2);
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 28px;
 }
 
-.benefit-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 0;
-    color: #ccc;
-    font-size: 0.9rem;
-}
-
-.benefit-item:not(:last-child) {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
 .benefit-item i {
-    color: #8b5cf6;
+    color: #ffd700;
     font-size: 1.1rem;
 }
 
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.9rem;
-    color: #999;
-    margin-bottom: 8px;
-    font-weight: 600;
-}
-
 .form-group label i {
-    color: #8b5cf6;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 14px 16px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    color: white;
-    font-size: 0.95rem;
-    transition: all 0.3s;
+    color: #ffd700;
 }
 
 .form-group input:focus {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: #8b5cf6;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-}
-
-.newsletter-consent {
-    margin: 24px 0;
-}
-
-.checkbox-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    user-select: none;
-    position: relative;
-    padding-left: 32px;
-}
-
-.checkbox-container input[type="checkbox"] {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    width: 0;
-    height: 0;
+    background: rgba(255, 215, 0, 0.05);
+    border-color: #ffd700;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
 }
 
 .checkmark {
@@ -2078,20 +2006,20 @@ footer::before {
     transform: translateY(-50%);
     height: 22px;
     width: 22px;
-    background-color: rgba(255, 255, 255, 0.03);
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 215, 0, 0.05);
+    border: 2px solid rgba(255, 215, 0, 0.3);
     border-radius: 4px;
     transition: all 0.3s;
 }
 
 .checkbox-container:hover .checkmark {
-    background-color: rgba(139, 92, 246, 0.1);
-    border-color: #8b5cf6;
+    background-color: rgba(255, 215, 0, 0.15);
+    border-color: #ffd700;
 }
 
 .checkbox-container input:checked ~ .checkmark {
-    background-color: #8b5cf6;
-    border-color: #8b5cf6;
+    background-color: #ffd700;
+    border-color: #ffd700;
 }
 
 .checkmark::after {
@@ -2102,77 +2030,68 @@ footer::before {
     top: 2px;
     width: 5px;
     height: 10px;
-    border: solid white;
+    border: solid #000;
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
-}
-
-.checkbox-container input:checked ~ .checkmark::after {
-    display: block;
-}
-
-.consent-text {
-    color: #999;
-    font-size: 0.85rem;
-}
-
-.newsletter-success {
-    text-align: center;
-    padding: 20px;
-}
-
-.newsletter-success.hidden {
-    display: none;
 }
 
 .success-icon {
     width: 80px;
     height: 80px;
     margin: 0 auto 20px;
-    background: linear-gradient(135deg, #00ff9d, #00cc7a);
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 2.5rem;
-    color: white;
-    box-shadow: 0 10px 30px rgba(0, 255, 157, 0.4);
+    color: #000;
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
     animation: scaleIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-@keyframes scaleIn {
-    0% { transform: scale(0); }
-    100% { transform: scale(1); }
 }
 
 .newsletter-success h4 {
     font-size: 1.5rem;
-    color: #00ff9d;
+    color: #ffd700;
     margin-bottom: 12px;
 }
 
-.newsletter-success p {
-    color: #999;
-    margin-bottom: 24px;
+/* Newsletter Send Section */
+.newsletter-send-section {
+    margin-top: 40px;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .hero-actions {
-        flex-direction: column;
-        width: 100%;
-    }
-    
-    .hero-actions .btn {
-        width: 100%;
-    }
-    
-    .newsletter-modal {
-        width: 95%;
-    }
-    
-    .newsletter-header,
-    .newsletter-body {
-        padding: 24px 20px;
-    }
+.newsletter-send-card {
+    background: rgba(255, 215, 0, 0.05);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.newsletter-send-header {
+    padding: 24px;
+    background: rgba(255, 215, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.newsletter-send-header h3 {
+    color: #ffd700;
+    margin-bottom: 8px;
+}
+
+.newsletter-send-header p {
+    color: #999;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.newsletter-send-body {
+    padding: 24px;
+}
+
+.newsletter-send-body textarea {
+    width: 100%;
+    min-height: 150px;
+    margin-bottom: 16px;
+    font-family: var(--font-main);
 }

@@ -769,6 +769,7 @@ function renderUsers() {
                     ${user.status !== 'admin' ? `
                         <select onchange="changeUserStatus('${user.id}', this.value)" class="status-select">
                             <option value="">Action...</option>
+                            <option value="admin">👑 Administrateur</option>
                             <option value="approved">✅ Éditeur</option>
                             <option value="refused">❌ Refuser</option>
                         </select>

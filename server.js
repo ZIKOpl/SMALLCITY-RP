@@ -301,6 +301,29 @@ const saveFile = (req, res, file) => {
 };
 
 /* =========================
+   DISCORD LINKS MANAGEMENT
+========================= */
+const discordLinksPath = path.join(dataDir, 'discord-links.json');
+
+// Créer le fichier s'il n'existe pas
+if (!fs.existsSync(discordLinksPath)) {
+    fs.writeFileSync(discordLinksPath, JSON.stringify({
+        legal: "https://discord.gg/legal-default",
+        illegal: "https://discord.gg/illegal-default"
+    }, null, 2));
+    console.log("📄 Fichier discord-links.json créé");
+}
+
+app.get("/api/discord-links", (req, res) => sendFile(res, "discord-links"));
+
+app.post("/api/discord-links", (req, res) => {
+    if (!req.user || req.user.status !== 'admin') {
+        return res.status(403).json({ error: 'Accès refusé' });
+    }
+    saveFile(req, res, "discord-links");
+});
+
+/* =========================
    API ROUTES
 ========================= */
 app.get("/api/rules", (req, res) => sendFile(res, "rules"));
@@ -308,6 +331,116 @@ app.post("/api/rules", (req, res) => saveFile(req, res, "rules"));
 
 app.get("/api/factions", (req, res) => sendFile(res, "factions"));
 app.post("/api/factions", (req, res) => saveFile(req, res, "factions"));
+
+/* =========================
+   FAQ SYSTEM
+========================= */
+const faqPath = path.join(dataDir, 'faq.json');
+
+// Créer le fichier s'il n'existe pas
+if (!fs.existsSync(faqPath)) {
+    fs.writeFileSync(faqPath, JSON.stringify([], null, 2));
+    console.log("📄 Fichier faq.json créé");
+}
+
+// Récupérer toutes les questions
+app.get("/api/faq", (req, res) => {
+    try {
+        const faq = readJSON('faq.json');
+        // Les utilisateurs normaux ne voient que les questions approuvées
+        if (!req.user || (req.user.status !== 'admin' && req.user.status !== 'approved')) {
+            const approvedFaq = faq.filter(q => q.status === 'answered');
+            return res.json(approvedFaq);
+        }
+        res.json(faq);
+    } catch(e) {
+        console.error("Erreur FAQ:", e);
+        res.json([]);
+    }
+});
+
+// Poster une nouvelle question
+app.post("/api/faq/question", (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ error: 'Connexion requise' });
+    }
+    
+    const { question } = req.body;
+    if (!question || question.trim() === '') {
+        return res.status(400).json({ error: 'Question vide' });
+    }
+    
+    const faq = readJSON('faq.json');
+    const newQuestion = {
+        id: Date.now().toString(),
+        question: question.trim(),
+        answer: '',
+        status: 'pending', // pending, answered
+        askedBy: {
+            id: req.user.id,
+            username: req.user.username,
+            avatar: req.user.avatar
+        },
+        askedAt: new Date().toISOString(),
+        answeredBy: null,
+        answeredAt: null
+    };
+    
+    faq.push(newQuestion);
+    writeJSON('faq.json', faq);
+    
+    console.log(`❓ Nouvelle question par ${req.user.username}`);
+    res.json({ success: true, question: newQuestion });
+});
+
+// Répondre à une question (admin/éditeur uniquement)
+app.post("/api/faq/:id/answer", (req, res) => {
+    if (!req.user || (req.user.status !== 'admin' && req.user.status !== 'approved')) {
+        return res.status(403).json({ error: 'Accès refusé' });
+    }
+    
+    const { id } = req.params;
+    const { answer } = req.body;
+    
+    if (!answer || answer.trim() === '') {
+        return res.status(400).json({ error: 'Réponse vide' });
+    }
+    
+    const faq = readJSON('faq.json');
+    const question = faq.find(q => q.id === id);
+    
+    if (!question) {
+        return res.status(404).json({ error: 'Question non trouvée' });
+    }
+    
+    question.answer = answer.trim();
+    question.status = 'answered';
+    question.answeredBy = {
+        id: req.user.id,
+        username: req.user.username,
+        avatar: req.user.avatar
+    };
+    question.answeredAt = new Date().toISOString();
+    
+    writeJSON('faq.json', faq);
+    
+    console.log(`✅ Question répondue par ${req.user.username}`);
+    res.json({ success: true, question });
+});
+
+// Supprimer une question (admin uniquement)
+app.delete("/api/faq/:id", (req, res) => {
+    if (!req.user || req.user.status !== 'admin') {
+        return res.status(403).json({ error: 'Accès refusé' });
+    }
+    
+    const { id } = req.params;
+    let faq = readJSON('faq.json');
+    faq = faq.filter(q => q.id !== id);
+    writeJSON('faq.json', faq);
+    
+    res.json({ success: true });
+});
 
 /* =========================
    START SERVER

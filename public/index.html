@@ -25,11 +25,12 @@
         </div>
 
         <nav class="nav">
-             <a onclick="switchPage('home')" class="active">Accueil</a>
-             <a onclick="switchPage('rules')">Règlement</a>
-             <a onclick="switchPage('legal')">Entreprises</a>
-             <a onclick="switchPage('illegal')">Groupes Illégaux</a>
-             <a onclick="switchPage('users')" class="admin-only hidden">Utilisateurs</a>
+            <a onclick="switchPage('home')" class="active">Accueil</a>
+            <a onclick="switchPage('rules')">Règlement</a>
+            <a onclick="switchPage('legal')">Entreprises</a>
+            <a onclick="switchPage('illegal')">Groupes Illégaux</a>
+            <a onclick="switchPage('faq')">FAQ</a>
+            <a onclick="switchPage('users')" class="admin-only hidden">Utilisateurs</a>
         </nav>
 
         <div class="auth-area" id="auth-area"></div>
@@ -121,6 +122,13 @@
                     <div class="divider"></div>
                     
                     <div class="toolbar-group">
+                        <button class="t-btn" onclick="insertImage()" title="Insérer une image"><i class="fa-solid fa-image"></i></button>
+                        <button class="t-btn" onclick="insertLink()" title="Insérer un lien"><i class="fa-solid fa-link"></i></button>
+                    </div>
+                    
+                    <div class="divider"></div>
+                    
+                    <div class="toolbar-group">
                         <button class="t-btn" onclick="execCmd('justifyLeft')" title="Aligner gauche"><i class="fa-solid fa-align-left"></i></button>
                         <button class="t-btn" onclick="execCmd('justifyCenter')" title="Centrer"><i class="fa-solid fa-align-center"></i></button>
                         <button class="t-btn" onclick="execCmd('justifyRight')" title="Aligner droite"><i class="fa-solid fa-align-right"></i></button>
@@ -138,6 +146,7 @@
                     <div class="toolbar-group">
                         <button class="t-btn" onclick="insertDivider()" title="Séparateur"><i class="fa-solid fa-minus"></i></button>
                         <button class="t-btn" onclick="insertCodeBlock()" title="Code"><i class="fa-solid fa-code"></i></button>
+                        <button class="t-btn" onclick="cleanPaste()" title="Nettoyer le formatage"><i class="fa-solid fa-eraser"></i></button>
                     </div>
                 </div>
 
@@ -167,7 +176,13 @@
                 <p>Légal et prospère.</p>
             </div>
             <div class="page-header-actions">
+                <a id="legalDiscordBtn" href="#" target="_blank" class="btn btn-discord">
+                    <i class="fa-brands fa-discord"></i> Discord Legal
+                </a>
                 <div class="editor-control hidden" style="display: flex; gap: 12px;">
+                    <button class="btn btn-secondary admin-only hidden" onclick="editDiscordLink('legal')">
+                        <i class="fa-solid fa-link"></i> Modifier Discord
+                    </button>
                     <button class="btn btn-secondary" onclick="exportJSON('legal')">
                         <i class="fa-solid fa-download"></i> Exporter
                     </button>
@@ -191,7 +206,13 @@
                 <p>L'ombre et le danger.</p>
             </div>
             <div class="page-header-actions">
+                <a id="illegalDiscordBtn" href="#" target="_blank" class="btn btn-discord" style="--primary: #ff2a2a;">
+                    <i class="fa-brands fa-discord"></i> Discord Illegal
+                </a>
                 <div class="editor-control hidden" style="display: flex; gap: 12px;">
+                    <button class="btn btn-secondary admin-only hidden" onclick="editDiscordLink('illegal')">
+                        <i class="fa-solid fa-link"></i> Modifier Discord
+                    </button>
                     <button class="btn btn-secondary" onclick="exportJSON('illegal')">
                         <i class="fa-solid fa-download"></i> Exporter
                     </button>
@@ -205,6 +226,44 @@
             </div>
         </div>
         <div class="factions-grid" id="illegalGrid"></div>
+    </section>
+
+    <!-- PAGE FAQ -->
+    <section id="faq" class="page">
+        <div class="page-header">
+            <div class="header-text">
+                <h2>Foire Aux Questions</h2>
+                <p>Posez vos questions, obtenez des réponses.</p>
+            </div>
+            <div class="page-header-actions">
+                <button class="btn btn-glow" onclick="openAskQuestionModal()">
+                    <i class="fa-solid fa-circle-question"></i> Poser une question
+                </button>
+            </div>
+        </div>
+
+        <!-- Filtres FAQ -->
+        <div class="faq-filters">
+            <button class="faq-filter-btn active" onclick="filterFAQ('all')" data-filter="all">
+                <i class="fa-solid fa-list"></i> Toutes
+            </button>
+            <button class="faq-filter-btn editor-only hidden" onclick="filterFAQ('pending')" data-filter="pending">
+                <i class="fa-solid fa-clock"></i> En attente
+            </button>
+            <button class="faq-filter-btn" onclick="filterFAQ('answered')" data-filter="answered">
+                <i class="fa-solid fa-check"></i> Répondues
+            </button>
+        </div>
+
+        <!-- Barre de recherche -->
+        <div class="faq-search-bar">
+            <input type="text" id="faqSearch" placeholder="🔍 Rechercher dans la FAQ..." onkeyup="searchFAQ()">
+        </div>
+
+        <!-- Liste des questions -->
+        <div id="faqContainer" class="faq-container">
+            <!-- Rempli dynamiquement -->
+        </div>
     </section>
 
     <!-- PAGE GESTION UTILISATEURS (Admin uniquement) -->
@@ -417,6 +476,52 @@
         <div class="modal-actions">
             <button class="btn btn-secondary" onclick="resolveCustomPrompt(null)">Annuler</button>
             <button class="btn btn-glow" onclick="resolveCustomPrompt(document.getElementById('promptInput').value)">Valider</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL POSER UNE QUESTION -->
+<div id="modalAskQuestion" class="modal hidden">
+    <div class="modal-box" style="max-width: 600px;">
+        <div class="faq-modal-header">
+            <h3><i class="fa-solid fa-circle-question"></i> Poser une question</h3>
+            <p class="faq-modal-subtitle">Notre équipe vous répondra dans les plus brefs délais</p>
+        </div>
+        
+        <div class="faq-modal-body">
+            <textarea id="faqQuestionInput" placeholder="Quelle est votre question ?" rows="5"></textarea>
+            <div class="faq-modal-hint">
+                <i class="fa-solid fa-lightbulb"></i>
+                <span>Soyez précis pour obtenir une réponse détaillée</span>
+            </div>
+        </div>
+        
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeAllModals()">Annuler</button>
+            <button class="btn btn-glow" onclick="submitQuestion()">
+                <i class="fa-solid fa-paper-plane"></i> Envoyer
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL RÉPONDRE À UNE QUESTION -->
+<div id="modalAnswerQuestion" class="modal hidden">
+    <div class="modal-box" style="max-width: 700px;">
+        <div class="faq-modal-header">
+            <h3><i class="fa-solid fa-reply"></i> Répondre à la question</h3>
+            <div id="answerQuestionText" class="faq-question-display"></div>
+        </div>
+        
+        <div class="faq-modal-body">
+            <textarea id="faqAnswerInput" placeholder="Votre réponse..." rows="6"></textarea>
+        </div>
+        
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeAllModals()">Annuler</button>
+            <button class="btn btn-glow" onclick="submitAnswer()">
+                <i class="fa-solid fa-check"></i> Publier
+            </button>
         </div>
     </div>
 </div>

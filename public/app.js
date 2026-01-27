@@ -5,6 +5,31 @@ let currentCat = null;
 let currentRuleId = null;
 let collapsedCategories = new Set(); // Pour tracker les catégories repliées
 
+async function init() {
+    try {
+        const res = await fetch(`${API_URL}/auth/user`, { credentials: "include" });
+        currentUser = await res.json();
+    } catch(e) {
+        console.error("Erreur récupération utilisateur :", e);
+    }
+    renderAuth();
+    await loadData();
+    
+    // Charger la FAQ
+    await loadFAQ();
+    
+    // Charger les users si admin
+    if (currentUser?.isAdmin) {
+        await loadUsers();
+    }
+    
+    // Fermer toutes les catégories au chargement
+    Object.keys(data.rules).forEach(cat => {
+        collapsedCategories.add(cat);
+    });
+    renderSidebar();
+}
+
 /* --- INIT --- */
 async function init() {
     try {
@@ -93,6 +118,68 @@ async function loadData() {
         data.illegal = [];
         renderLegal();
         renderIllegal();
+    }
+}
+
+let discordLinks = { legal: "", illegal: "" };
+
+async function loadData() {
+    try {
+        const [rulesRes, factionsRes, discordRes] = await Promise.all([
+            fetch(`${API_URL}/api/rules`).then(r => r.json()),
+            fetch(`${API_URL}/api/factions`).then(r => r.json()),
+            fetch(`${API_URL}/api/discord-links`).then(r => r.json())
+        ]);
+
+        data.rules = rulesRes || {};
+        data.legal = factionsRes.filter(f => f.type === "legal") || [];
+        data.illegal = factionsRes.filter(f => f.type === "illegal") || [];
+        discordLinks = discordRes || { legal: "", illegal: "" };
+
+        // Mettre à jour les boutons Discord
+        updateDiscordButtons();
+        
+        renderLegal();
+        renderIllegal();
+    } catch(e) {
+        console.error("Erreur chargement données :", e);
+        data.rules = {};
+        data.legal = [];
+        data.illegal = [];
+        renderLegal();
+        renderIllegal();
+    }
+}
+
+function updateDiscordButtons() {
+    const legalBtn = document.getElementById('legalDiscordBtn');
+    const illegalBtn = document.getElementById('illegalDiscordBtn');
+    
+    if (legalBtn) legalBtn.href = discordLinks.legal || '#';
+    if (illegalBtn) illegalBtn.href = discordLinks.illegal || '#';
+}
+
+async function editDiscordLink(type) {
+    if (!currentUser?.isAdmin) return;
+    
+    const currentLink = discordLinks[type];
+    const newLink = await customPrompt(
+        `Nouveau lien Discord ${type === 'legal' ? 'Legal' : 'Illegal'} :`,
+        currentLink
+    );
+    
+    if (newLink && newLink !== currentLink) {
+        discordLinks[type] = newLink;
+        
+        await fetch(`${API_URL}/api/discord-links`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(discordLinks)
+        });
+        
+        updateDiscordButtons();
+        toastSuccess('Lien modifié', `Le lien Discord ${type} a été mis à jour.`);
     }
 }
 
@@ -297,6 +384,98 @@ function openRule(cat, id) {
         footer.classList.add('hidden'); 
     }
 }
+
+/* =============================================
+   ÉDITEUR ENRICHI - Images, Liens, Formatage
+============================================= */
+
+async function insertImage() {
+    const url = await customPrompt("URL de l'image :");
+    if (url) {
+        const img = document.createElement('img');
+        img.src = url;
+        img.className = 'rule-content-image';
+        img.alt = 'Image du règlement';
+        img.onerror = function() {
+            this.src = 'https://via.placeholder.com/800x400/1a1a1e/666?text=Image+non+trouvée';
+        };
+        
+        const content = document.getElementById("editContent");
+        content.appendChild(img);
+        content.focus();
+        
+        toastSuccess('Image ajoutée', 'L\'image a été insérée dans le règlement.');
+    }
+}
+
+async function insertLink() {
+    const selection = window.getSelection();
+    const selectedText = selection.toString();
+    
+    const url = await customPrompt("URL du lien :");
+    if (!url) return;
+    
+    let linkText = selectedText;
+    if (!linkText) {
+        linkText = await customPrompt("Texte du lien :", url);
+        if (!linkText) return;
+    }
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.textContent = linkText;
+    link.className = 'rule-content-link';
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    
+    if (selectedText) {
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(link);
+    } else {
+        const content = document.getElementById("editContent");
+        content.appendChild(link);
+        content.appendChild(document.createTextNode(' '));
+    }
+    
+    document.getElementById("editContent").focus();
+    toastSuccess('Lien ajouté', 'Le lien a été inséré.');
+}
+
+// Nettoyer le formatage lors du collage
+function cleanPaste() {
+    const content = document.getElementById("editContent");
+    if (!content) return;
+    
+    // Sélectionner tout le contenu
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(content);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    
+    // Retirer le formatage
+    document.execCommand('removeFormat', false, null);
+    document.execCommand('unlink', false, null);
+    
+    toastInfo('Formatage nettoyé', 'Le formatage a été supprimé du texte sélectionné.');
+}
+
+// Améliorer le collage automatique
+document.addEventListener('DOMContentLoaded', function() {
+    const editContent = document.getElementById('editContent');
+    if (editContent) {
+        editContent.addEventListener('paste', function(e) {
+            e.preventDefault();
+            
+            // Récupérer le texte sans formatage
+            const text = e.clipboardData.getData('text/plain');
+            
+            // Insérer le texte proprement
+            document.execCommand('insertText', false, text);
+        });
+    }
+});
 
 function execCmd(cmd, val=null) { 
     document.execCommand(cmd, false, val); 
@@ -1065,5 +1244,273 @@ async function confirmImportJSON() {
         toastError('Erreur d\'import', e.message);
     }
 }
+
+/* =============================================
+   SYSTÈME FAQ
+============================================= */
+
+let allFAQ = [];
+let currentFAQFilter = 'all';
+let currentAnsweringQuestionId = null;
+
+async function loadFAQ() {
+    try {
+        const res = await fetch(`${API_URL}/api/faq`, { credentials: 'include' });
+        allFAQ = await res.json();
+        renderFAQ();
+    } catch (e) {
+        console.error('Erreur chargement FAQ:', e);
+        allFAQ = [];
+        renderFAQ();
+    }
+}
+
+function renderFAQ() {
+    const container = document.getElementById('faqContainer');
+    if (!container) return;
+    
+    // Filtrer les questions
+    let filteredFAQ = allFAQ;
+    
+    if (currentFAQFilter === 'pending') {
+        filteredFAQ = allFAQ.filter(q => q.status === 'pending');
+    } else if (currentFAQFilter === 'answered') {
+        filteredFAQ = allFAQ.filter(q => q.status === 'answered');
+    }
+    
+    // Recherche
+    const searchTerm = document.getElementById('faqSearch')?.value.toLowerCase() || '';
+    if (searchTerm) {
+        filteredFAQ = filteredFAQ.filter(q => 
+            q.question.toLowerCase().includes(searchTerm) ||
+            (q.answer && q.answer.toLowerCase().includes(searchTerm))
+        );
+    }
+    
+    container.innerHTML = '';
+    
+    if (filteredFAQ.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="icon-circle"><i class="fa-regular fa-circle-question"></i></div>
+                <h3>Aucune question</h3>
+                <p>${currentFAQFilter === 'pending' ? 'Aucune question en attente' : 'Aucune question trouvée'}</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Trier par date (plus récentes en premier)
+    filteredFAQ.sort((a, b) => new Date(b.askedAt) - new Date(a.askedAt));
+    
+    filteredFAQ.forEach(faqItem => {
+        const card = document.createElement('div');
+        card.className = `faq-card ${faqItem.status}`;
+        
+        const askedDate = new Date(faqItem.askedAt).toLocaleString('fr-FR', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        let answeredInfo = '';
+        if (faqItem.status === 'answered' && faqItem.answeredBy) {
+            const answeredDate = new Date(faqItem.answeredAt).toLocaleString('fr-FR', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            answeredInfo = `
+                <div class="faq-answer">
+                    <div class="faq-answer-header">
+                        <img src="${faqItem.answeredBy.avatar}" class="faq-avatar" alt="${faqItem.answeredBy.username}">
+                        <div class="faq-answer-meta">
+                            <strong>${faqItem.answeredBy.username}</strong>
+                            <span class="faq-badge staff">Staff</span>
+                            <span class="faq-date">${answeredDate}</span>
+                        </div>
+                    </div>
+                    <div class="faq-answer-text">${faqItem.answer}</div>
+                </div>
+            `;
+        }
+        
+        const canEdit = currentUser?.isEditor || currentUser?.isAdmin;
+        const showUserId = canEdit;
+        
+        let actions = '';
+        if (faqItem.status === 'pending' && canEdit) {
+            actions = `
+                <div class="faq-actions">
+                    <button class="btn btn-glow btn-sm" onclick="openAnswerModal('${faqItem.id}')">
+                        <i class="fa-solid fa-reply"></i> Répondre
+                    </button>
+                    ${currentUser?.isAdmin ? `
+                        <button class="btn btn-danger btn-sm" onclick="deleteFAQQuestion('${faqItem.id}')">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    ` : ''}
+                </div>
+            `;
+        } else if (faqItem.status === 'answered' && currentUser?.isAdmin) {
+            actions = `
+                <div class="faq-actions">
+                    <button class="btn btn-danger btn-sm" onclick="deleteFAQQuestion('${faqItem.id}')">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `;
+        }
+        
+        card.innerHTML = `
+            <div class="faq-question-header">
+                <img src="${faqItem.askedBy.avatar}" class="faq-avatar" alt="${faqItem.askedBy.username}">
+                <div class="faq-question-meta">
+                    <div class="faq-user-info">
+                        <strong>${faqItem.askedBy.username}</strong>
+                        ${showUserId ? `<code class="faq-user-id">${faqItem.askedBy.id}</code>` : ''}
+                    </div>
+                    <span class="faq-date">${askedDate}</span>
+                </div>
+                <span class="faq-badge ${faqItem.status}">
+                    ${faqItem.status === 'pending' ? '⏳ En attente' : '✅ Répondue'}
+                </span>
+            </div>
+            
+            <div class="faq-question-text">${faqItem.question}</div>
+            
+            ${answeredInfo}
+            ${actions}
+        `;
+        
+        container.appendChild(card);
+    });
+}
+
+function filterFAQ(filter) {
+    currentFAQFilter = filter;
+    
+    // Mettre à jour les boutons actifs
+    document.querySelectorAll('.faq-filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.filter === filter) {
+            btn.classList.add('active');
+        }
+    });
+    
+    renderFAQ();
+}
+
+function searchFAQ() {
+    renderFAQ();
+}
+
+function openAskQuestionModal() {
+    if (!currentUser) {
+        if (confirm('Vous devez être connecté pour poser une question. Se connecter maintenant ?')) {
+            window.location.href = `${API_URL}/auth/discord`;
+        }
+        return;
+    }
+    
+    document.getElementById('faqQuestionInput').value = '';
+    openModal('modalAskQuestion');
+}
+
+async function submitQuestion() {
+    const question = document.getElementById('faqQuestionInput').value.trim();
+    
+    if (!question) {
+        toastError('Erreur', 'Veuillez entrer une question');
+        return;
+    }
+    
+    try {
+        const res = await fetch(`${API_URL}/api/faq/question`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ question })
+        });
+        
+        if (res.ok) {
+            await loadFAQ();
+            closeAllModals();
+            toastSuccess('Question envoyée', 'Votre question a été soumise avec succès !');
+        } else {
+            const data = await res.json();
+            toastError('Erreur', data.error || 'Impossible d\'envoyer la question');
+        }
+    } catch (e) {
+        console.error(e);
+        toastError('Erreur', 'Une erreur est survenue');
+    }
+}
+
+function openAnswerModal(questionId) {
+    const question = allFAQ.find(q => q.id === questionId);
+    if (!question) return;
+    
+    currentAnsweringQuestionId = questionId;
+    document.getElementById('answerQuestionText').textContent = question.question;
+    document.getElementById('faqAnswerInput').value = '';
+    
+    openModal('modalAnswerQuestion');
+}
+
+async function submitAnswer() {
+    const answer = document.getElementById('faqAnswerInput').value.trim();
+    
+    if (!answer) {
+        toastError('Erreur', 'Veuillez entrer une réponse');
+        return;
+    }
+    
+    try {
+        const res = await fetch(`${API_URL}/api/faq/${currentAnsweringQuestionId}/answer`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ answer })
+        });
+        
+        if (res.ok) {
+            await loadFAQ();
+            closeAllModals();
+            toastSuccess('Réponse publiée', 'La réponse a été ajoutée avec succès !');
+            currentAnsweringQuestionId = null;
+        } else {
+            const data = await res.json();
+            toastError('Erreur', data.error || 'Impossible de publier la réponse');
+        }
+    } catch (e) {
+        console.error(e);
+        toastError('Erreur', 'Une erreur est survenue');
+    }
+}
+
+async function deleteFAQQuestion(questionId) {
+    if (!await customConfirm('Supprimer cette question ?')) return;
+    
+    try {
+        const res = await fetch(`${API_URL}/api/faq/${questionId}`, {
+            method: 'DELETE',
+            credentials: 'include'
+        });
+        
+        if (res.ok) {
+            await loadFAQ();
+            toastSuccess('Question supprimée', 'La question a été supprimée');
+        }
+    } catch (e) {
+        console.error(e);
+        toastError('Erreur', 'Impossible de supprimer la question');
+    }
+}
+
 /* --- INIT --- */
 init();

@@ -1,9 +1,9 @@
-const API_URL = window.location.origin; // <-- correction ici
+const API_URL = window.location.origin;
 let currentUser = null;
 let data = { rules: {}, legal: [], illegal: [] };
 let currentCat = null;
 let currentRuleId = null;
-let collapsedCategories = new Set(); // Pour tracker les catégories repliées
+let collapsedCategories = new Set();
 
 async function init() {
     try {
@@ -15,43 +15,17 @@ async function init() {
     renderAuth();
     await loadData();
     
-    // Charger la FAQ
     await loadFAQ();
     
-    // Charger les users si admin
-    if (currentUser?.isAdmin) {
+    if (currentUser?.isAdmin || currentUser?.isModerator) {
         await loadUsers();
     }
     
-    // Fermer toutes les catégories au chargement
     Object.keys(data.rules).forEach(cat => {
         collapsedCategories.add(cat);
     });
     renderSidebar();
     setupCleanPaste();
-}
-
-/* --- INIT --- */
-async function init() {
-    try {
-        const res = await fetch(`${API_URL}/auth/user`, { credentials: "include" });
-        currentUser = await res.json();
-    } catch(e) {
-        console.error("Erreur récupération utilisateur :", e);
-    }
-    renderAuth();
-    await loadData();
-    
-    // Charger les users si admin
-    if (currentUser?.isAdmin) {
-        await loadUsers();
-    }
-    
-    // Fermer toutes les catégories au chargement
-    Object.keys(data.rules).forEach(cat => {
-        collapsedCategories.add(cat);
-    });
-    renderSidebar();
 }
 
 /* --- AUTH --- */
@@ -62,7 +36,6 @@ function renderAuth() {
         document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
         document.querySelectorAll('.editor-control').forEach(el => el.classList.add('hidden'));
     } else {
-        // Afficher le profil
         area.innerHTML = `
             <div style="display:flex; align-items:center; gap:10px; background:#111; padding:5px 15px; border-radius:20px; border:1px solid #222;">
                 <img src="${currentUser.avatar}" style="width:30px;height:30px;border-radius:50%;">
@@ -70,15 +43,13 @@ function renderAuth() {
                 <button class="btn-icon" onclick="logout()" style="padding:4px;"><i class="fa-solid fa-power-off"></i></button>
             </div>`;
         
-        // Afficher les contrôles admin SEULEMENT si admin
-        if (currentUser.isAdmin) {
+        if (currentUser.isAdmin || currentUser.isModerator) {
             document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
             document.querySelectorAll('.editor-only').forEach(el => el.classList.remove('hidden'));
         } else {
             document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
         }
         
-        // Afficher les contrôles éditeur si éditeur (admin OU approuvé)
         if (currentUser.isEditor) {
             document.querySelectorAll('.editor-control').forEach(el => el.classList.remove('hidden'));
         } else {
@@ -98,30 +69,6 @@ async function logout() {
 }
 
 /* --- DATA LOAD --- */
-async function loadData() {
-    try {
-        const [rulesRes, factionsRes] = await Promise.all([
-            fetch(`${API_URL}/api/rules`).then(r => r.json()),
-            fetch(`${API_URL}/api/factions`).then(r => r.json())
-        ]);
-
-        data.rules = rulesRes || {};
-        data.legal = factionsRes.filter(f => f.type === "legal") || [];
-        data.illegal = factionsRes.filter(f => f.type === "illegal") || [];
-
-        // Ne pas appeler renderSidebar ici, init() s'en charge
-        renderLegal();
-        renderIllegal();
-    } catch(e) {
-        console.error("Erreur chargement données :", e);
-        data.rules = {};
-        data.legal = [];
-        data.illegal = [];
-        renderLegal();
-        renderIllegal();
-    }
-}
-
 let discordLinks = { legal: "", illegal: "" };
 
 async function loadData() {
@@ -137,7 +84,6 @@ async function loadData() {
         data.illegal = factionsRes.filter(f => f.type === "illegal") || [];
         discordLinks = discordRes || { legal: "", illegal: "" };
 
-        // Mettre à jour les boutons Discord
         updateDiscordButtons();
         
         renderLegal();
@@ -192,7 +138,6 @@ function renderSidebar() {
     cats.forEach((cat, catIndex) => {
         const isCollapsed = collapsedCategories.has(cat);
         
-        // Wrapper pour catégorie (pour position relative du menu)
         const catWrapper = document.createElement("div");
         catWrapper.className = "cat-wrapper";
         
@@ -221,7 +166,6 @@ function renderSidebar() {
         `;
         catWrapper.appendChild(header);
 
-        // Menu contextuel admin (dropdown) - maintenant dans le wrapper
         if (currentUser?.isEditor) {
             const menu = document.createElement("div");
             menu.className = "cat-dropdown hidden";
@@ -240,7 +184,6 @@ function renderSidebar() {
 
         sb.appendChild(catWrapper);
 
-        // Container pour les règles
         const rulesContainer = document.createElement("div");
         rulesContainer.className = `rules-container ${isCollapsed ? 'collapsed' : ''}`;
 
@@ -262,14 +205,11 @@ function toggleCatMenu(cat, triggerElement) {
     if(menu) {
         menu.classList.toggle('hidden');
         
-        // Positionner le menu à côté du bouton
         if(!menu.classList.contains('hidden')) {
             const rect = triggerElement.getBoundingClientRect();
-            const menuRect = menu.getBoundingClientRect();
             const sidebar = document.querySelector('.docs-sidebar');
             const sidebarRect = sidebar.getBoundingClientRect();
             
-            // Position par défaut : à droite du bouton
             menu.style.left = 'auto';
             menu.style.right = '8px';
             menu.style.top = (rect.bottom - sidebarRect.top + sidebar.scrollTop + 4) + 'px';
@@ -281,33 +221,12 @@ function closeCatMenus() {
     document.querySelectorAll('.cat-dropdown').forEach(m => m.classList.add('hidden'));
 }
 
-// Fermer les menus si on clique ailleurs
 document.addEventListener('click', (e) => {
     if(!e.target.closest('.cat-menu-trigger') && !e.target.closest('.cat-dropdown')) {
         closeCatMenus();
     }
 });
 
-function toggleCatMenu(cat) {
-    closeCatMenus();
-    const menu = document.getElementById(`catMenu-${cat}`);
-    if(menu) {
-        menu.classList.toggle('hidden');
-    }
-}
-
-function closeCatMenus() {
-    document.querySelectorAll('.cat-dropdown').forEach(m => m.classList.add('hidden'));
-}
-
-// Fermer les menus si on clique ailleurs
-document.addEventListener('click', (e) => {
-    if(!e.target.closest('.cat-menu-trigger') && !e.target.closest('.cat-dropdown')) {
-        closeCatMenus();
-    }
-});
-
-/* --- TOGGLE CATEGORY --- */
 function toggleCategory(catName) {
     if (collapsedCategories.has(catName)) {
         collapsedCategories.delete(catName);
@@ -317,7 +236,6 @@ function toggleCategory(catName) {
     renderSidebar();
 }
 
-/* --- DÉPLACEMENT CATÉGORIES --- */
 function moveCat(catName, direction) {
     const cats = Object.keys(data.rules);
     const index = cats.indexOf(catName);
@@ -339,9 +257,8 @@ function moveCat(catName, direction) {
     });
 }
 
-/* --- RÈGLES ADMIN --- */
 async function addRulePrompt(cat) {
-    if(!currentUser?.isAdmin) return;
+    if(!currentUser?.isEditor) return;
     const title = await customPrompt("Titre de la nouvelle règle :");
     if(title) {
         data.rules[cat].push({ id: Date.now().toString(), title, content: "<p>Écrivez le contenu ici...</p>" });
@@ -352,6 +269,7 @@ async function addRulePrompt(cat) {
         });
     }
 }
+
 function openRule(cat, id) {
     currentCat = cat;
     currentRuleId = id;
@@ -361,7 +279,6 @@ function openRule(cat, id) {
     const toolbar = document.getElementById("docToolbar");
     const footer = document.getElementById("docFooter");
     
-    // ✅ CORRECTION : Vérifier isEditor au lieu de isAdmin
     const canEdit = currentUser?.isEditor === true;
     
     display.innerHTML = `
@@ -376,10 +293,14 @@ function openRule(cat, id) {
         <div class="edit-content-simple" contenteditable="${canEdit}" id="editContent">${rule.content}</div>
     `;
     
-    // ✅ CORRECTION : Afficher toolbar et footer si isEditor
     if(canEdit) { 
         toolbar.classList.remove('hidden'); 
         footer.classList.remove('hidden'); 
+        
+        setTimeout(() => {
+            setupImageResizing();
+            setupCleanPaste();
+        }, 100);
     } else { 
         toolbar.classList.add('hidden'); 
         footer.classList.add('hidden'); 
@@ -387,26 +308,307 @@ function openRule(cat, id) {
 }
 
 /* =============================================
-   ÉDITEUR ENRICHI - Images, Liens, Formatage
+   ÉDITEUR ENRICHI - Images redimensionnables
 ============================================= */
+function setupImageResizing() {
+    const content = document.getElementById("editContent");
+    if (!content) return;
+    
+    content.addEventListener('click', function(e) {
+        if (e.target.tagName === 'IMG') {
+            makeImageResizable(e.target);
+        }
+    });
+}
+
+function makeImageResizable(img) {
+    if (img.classList.contains('resizable')) return;
+    
+    img.classList.add('resizable', 'selected-image');
+    img.style.cursor = 'move';
+    
+    const wrapper = document.createElement('div');
+    wrapper.className = 'image-wrapper';
+    wrapper.style.position = 'relative';
+    wrapper.style.display = 'inline-block';
+    wrapper.style.maxWidth = '100%';
+    
+    img.parentNode.insertBefore(wrapper, img);
+    wrapper.appendChild(img);
+    
+    const handles = ['nw', 'ne', 'sw', 'se'];
+    handles.forEach(pos => {
+        const handle = document.createElement('div');
+        handle.className = `resize-handle ${pos}`;
+        handle.style.cssText = `
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border: 2px solid white;
+            border-radius: 50%;
+            cursor: ${pos.includes('n') ? (pos.includes('w') ? 'nw' : 'ne') : (pos.includes('w') ? 'sw' : 'se')}-resize;
+            z-index: 10;
+        `;
+        
+        if (pos.includes('n')) handle.style.top = '-6px';
+        if (pos.includes('s')) handle.style.bottom = '-6px';
+        if (pos.includes('w')) handle.style.left = '-6px';
+        if (pos.includes('e')) handle.style.right = '-6px';
+        
+        handle.addEventListener('mousedown', (e) => startResize(e, img, pos));
+        wrapper.appendChild(handle);
+    });
+    
+    const toolbar = document.createElement('div');
+    toolbar.className = 'image-toolbar';
+    toolbar.style.cssText = `
+        position: absolute;
+        top: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.9);
+        padding: 8px;
+        border-radius: 8px;
+        display: flex;
+        gap: 8px;
+        z-index: 11;
+    `;
+    
+    const alignments = [
+        { icon: 'fa-align-left', title: 'Aligner à gauche', action: () => alignImage(wrapper, 'left') },
+        { icon: 'fa-align-center', title: 'Centrer', action: () => alignImage(wrapper, 'center') },
+        { icon: 'fa-align-right', title: 'Aligner à droite', action: () => alignImage(wrapper, 'right') },
+        { icon: 'fa-trash', title: 'Supprimer', action: () => deleteImage(wrapper) }
+    ];
+    
+    alignments.forEach(btn => {
+        const button = document.createElement('button');
+        button.className = 't-btn';
+        button.innerHTML = `<i class="fa-solid ${btn.icon}"></i>`;
+        button.title = btn.title;
+        button.onclick = (e) => { e.stopPropagation(); btn.action(); };
+        toolbar.appendChild(button);
+    });
+    
+    wrapper.appendChild(toolbar);
+    
+    document.addEventListener('click', (e) => {
+        if (!wrapper.contains(e.target)) {
+            deselectImage(wrapper);
+        }
+    });
+}
+
+function startResize(e, img, position) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startWidth = img.offsetWidth;
+    const startHeight = img.offsetHeight;
+    const aspectRatio = startWidth / startHeight;
+    
+    function resize(e) {
+        const deltaX = e.clientX - startX;
+        const deltaY = e.clientY - startY;
+        
+        let newWidth = startWidth;
+        let newHeight = startHeight;
+        
+        if (position.includes('e')) newWidth = startWidth + deltaX;
+        if (position.includes('w')) newWidth = startWidth - deltaX;
+        if (position.includes('s')) newHeight = startHeight + deltaY;
+        if (position.includes('n')) newHeight = startHeight - deltaY;
+        
+        if (e.shiftKey) {
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                newHeight = newWidth / aspectRatio;
+            } else {
+                newWidth = newHeight * aspectRatio;
+            }
+        }
+        
+        newWidth = Math.max(50, Math.min(newWidth, 1200));
+        newHeight = Math.max(50, Math.min(newHeight, 1200));
+        
+        img.style.width = newWidth + 'px';
+        img.style.height = newHeight + 'px';
+    }
+    
+    function stopResize() {
+        document.removeEventListener('mousemove', resize);
+        document.removeEventListener('mouseup', stopResize);
+    }
+    
+    document.addEventListener('mousemove', resize);
+    document.addEventListener('mouseup', stopResize);
+}
+
+function alignImage(wrapper, alignment) {
+    wrapper.style.display = 'block';
+    
+    if (alignment === 'left') {
+        wrapper.style.float = 'left';
+        wrapper.style.marginRight = '20px';
+        wrapper.style.marginBottom = '10px';
+        wrapper.style.textAlign = 'left';
+    } else if (alignment === 'right') {
+        wrapper.style.float = 'right';
+        wrapper.style.marginLeft = '20px';
+        wrapper.style.marginBottom = '10px';
+        wrapper.style.textAlign = 'right';
+    } else {
+        wrapper.style.float = 'none';
+        wrapper.style.margin = '20px auto';
+        wrapper.style.textAlign = 'center';
+    }
+}
+
+function deleteImage(wrapper) {
+    if (confirm('Supprimer cette image ?')) {
+        wrapper.remove();
+    }
+}
+
+function deselectImage(wrapper) {
+    const img = wrapper.querySelector('img');
+    img.classList.remove('selected-image');
+    wrapper.querySelectorAll('.resize-handle').forEach(h => h.remove());
+    wrapper.querySelector('.image-toolbar')?.remove();
+    
+    if (wrapper.parentNode) {
+        wrapper.replaceWith(img);
+    }
+}
 
 async function insertImage() {
     const url = await customPrompt("URL de l'image :");
-    if (url) {
-        const img = document.createElement('img');
-        img.src = url;
-        img.className = 'rule-content-image';
-        img.alt = 'Image du règlement';
-        img.onerror = function() {
-            this.src = 'https://via.placeholder.com/800x400/1a1a1e/666?text=Image+non+trouvée';
+    if (!url) return;
+    
+    const content = document.getElementById("editContent");
+    
+    // Créer un conteneur pour l'image
+    const wrapper = document.createElement('div');
+    wrapper.className = 'image-wrapper';
+    wrapper.contentEditable = 'false';
+    wrapper.style.cssText = 'position: relative; display: inline-block; margin: 20px auto; max-width: 100%; text-align: center;';
+    
+    const img = document.createElement('img');
+    img.src = url;
+    img.className = 'rule-content-image';
+    img.alt = 'Image du règlement';
+    img.style.cssText = 'max-width: 100%; height: auto; display: block; cursor: move;';
+    img.draggable = true;
+    
+    img.onerror = function() {
+        this.src = 'https://via.placeholder.com/800x400/1a1a1e/666?text=Image+non+trouvée';
+    };
+    
+    // Ajouter des poignées de redimensionnement
+    const handles = ['nw', 'ne', 'sw', 'se'];
+    handles.forEach(pos => {
+        const handle = document.createElement('div');
+        handle.className = `resize-handle resize-${pos}`;
+        handle.style.cssText = `
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--primary);
+            border: 2px solid white;
+            border-radius: 50%;
+            cursor: ${pos}-resize;
+            z-index: 10;
+        `;
+        
+        // Positionner les poignées
+        if (pos.includes('n')) handle.style.top = '-5px';
+        if (pos.includes('s')) handle.style.bottom = '-5px';
+        if (pos.includes('w')) handle.style.left = '-5px';
+        if (pos.includes('e')) handle.style.right = '-5px';
+        
+        // Événement de redimensionnement
+        handle.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const startX = e.clientX;
+            const startY = e.clientY;
+            const startWidth = img.offsetWidth;
+            const startHeight = img.offsetHeight;
+            const aspectRatio = startWidth / startHeight;
+            
+            function resize(e) {
+                const deltaX = e.clientX - startX;
+                const deltaY = e.clientY - startY;
+                
+                let newWidth = startWidth;
+                let newHeight = startHeight;
+                
+                if (pos.includes('e')) newWidth = startWidth + deltaX;
+                if (pos.includes('w')) newWidth = startWidth - deltaX;
+                if (pos.includes('s')) newHeight = startHeight + deltaY;
+                if (pos.includes('n')) newHeight = startHeight - deltaY;
+                
+                // Maintenir le ratio
+                if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                    newHeight = newWidth / aspectRatio;
+                } else {
+                    newWidth = newHeight * aspectRatio;
+                }
+                
+                img.style.width = Math.max(100, newWidth) + 'px';
+                img.style.height = 'auto';
+            }
+            
+            function stopResize() {
+                document.removeEventListener('mousemove', resize);
+                document.removeEventListener('mouseup', stopResize);
+            }
+            
+            document.addEventListener('mousemove', resize);
+            document.addEventListener('mouseup', stopResize);
+        });
+        
+        wrapper.appendChild(handle);
+    });
+    
+    // Menu contextuel pour alignement
+    const alignMenu = document.createElement('div');
+    alignMenu.className = 'image-align-menu';
+    alignMenu.style.cssText = 'position: absolute; top: -40px; left: 50%; transform: translateX(-50%); background: #1a1a1e; border-radius: 8px; padding: 8px; display: flex; gap: 8px; opacity: 0; transition: opacity 0.3s;';
+    
+    ['left', 'center', 'right'].forEach(align => {
+        const btn = document.createElement('button');
+        btn.innerHTML = `<i class="fa-solid fa-align-${align}"></i>`;
+        btn.style.cssText = 'background: rgba(255,255,255,0.1); border: none; color: white; padding: 8px 12px; border-radius: 4px; cursor: pointer;';
+        btn.onclick = () => {
+            wrapper.style.textAlign = align;
+            wrapper.style.display = align === 'center' ? 'block' : 'inline-block';
+            wrapper.style.margin = align === 'center' ? '20px auto' : '20px';
+            if (align === 'left') wrapper.style.float = 'left';
+            if (align === 'right') wrapper.style.float = 'right';
         };
-        
-        const content = document.getElementById("editContent");
-        content.appendChild(img);
-        content.focus();
-        
-        toastSuccess('Image ajoutée', 'L\'image a été insérée dans le règlement.');
-    }
+        alignMenu.appendChild(btn);
+    });
+    
+    wrapper.appendChild(alignMenu);
+    
+    // Afficher le menu au survol
+    wrapper.addEventListener('mouseenter', () => {
+        alignMenu.style.opacity = '1';
+    });
+    wrapper.addEventListener('mouseleave', () => {
+        alignMenu.style.opacity = '0';
+    });
+    
+    wrapper.appendChild(img);
+    content.appendChild(wrapper);
+    content.appendChild(document.createElement('br'));
+    content.focus();
+    
+    toastSuccess('Image ajoutée', 'L\'image a été insérée. Utilisez les poignées pour redimensionner.');
 }
 
 async function insertLink() {
@@ -444,10 +646,8 @@ async function insertLink() {
 }
 
 /* =============================================
-   COPIER-COLLER PROPRE - Sans formatage externe
+   COPIER-COLLER PROPRE
 ============================================= */
-
-// Nettoyer le formatage lors du collage
 function setupCleanPaste() {
     const editContent = document.getElementById('editContent');
     if (!editContent) return;
@@ -455,17 +655,13 @@ function setupCleanPaste() {
     editContent.addEventListener('paste', function(e) {
         e.preventDefault();
         
-        // Récupérer le texte brut sans aucun formatage
         const text = (e.clipboardData || window.clipboardData).getData('text/plain');
-        
-        // Insérer le texte proprement
         const selection = window.getSelection();
         if (!selection.rangeCount) return;
         
         const range = selection.getRangeAt(0);
         range.deleteContents();
         
-        // Diviser par lignes et créer des paragraphes
         const lines = text.split('\n');
         lines.forEach((line, index) => {
             if (line.trim()) {
@@ -480,11 +676,30 @@ function setupCleanPaste() {
             }
         });
         
-        // Repositionner le curseur
         range.collapse(false);
         selection.removeAllRanges();
         selection.addRange(range);
     });
+}
+
+function cleanPaste() {
+    const content = document.getElementById("editContent");
+    if (!content) return;
+    
+    const text = content.innerText;
+    content.innerHTML = '';
+    
+    const lines = text.split('\n');
+    lines.forEach(line => {
+        if (line.trim()) {
+            const p = document.createElement('p');
+            p.textContent = line;
+            content.appendChild(p);
+        }
+    });
+    
+    content.focus();
+    toastSuccess('Formatage nettoyé', 'Le texte a été nettoyé avec succès');
 }
 
 function execCmd(cmd, val=null) { 
@@ -502,10 +717,6 @@ function insertDivider() {
     hr.className = 'content-divider';
     content.appendChild(hr);
     content.focus();
-}
-
-function changeFontSize(size) {
-    execCmd('fontSize', size);
 }
 
 async function insertCodeBlock() {
@@ -558,7 +769,6 @@ async function deleteRule() {
     });
 }
 
-/* --- RÉORGANISER RÈGLE (nouvelle fonction) --- */
 function reorganizeRule() {
     if(!currentCat || !currentRuleId) return;
     
@@ -645,7 +855,7 @@ function addCat() {
     }
 }
 
-/* --- FACTIONS LEGAL / ILLEGAL --- */
+/* --- FACTIONS --- */
 function renderLegal() { renderFactions(data.legal, "legalGrid"); }
 function renderIllegal() { renderFactions(data.illegal, "illegalGrid"); }
 
@@ -737,7 +947,6 @@ async function delFaction(gridId, index) {
     });
 }
 
-// Dans switchPage(), ajouter un rechargement FAQ
 function switchPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     
@@ -757,13 +966,13 @@ function switchPage(id) {
     if(id === 'legal') body.classList.add('theme-green');
     if(id === 'illegal') body.classList.add('theme-red');
     
-    // ✅ RECHARGER LA FAQ SI ON VA SUR LA PAGE FAQ
     if(id === 'faq') {
         loadFAQ();
     }
+    
+    closeMobileMenu();
 }
 
-/* --- HELPERS --- */
 async function pushData(type, body) {
     await fetch(`${API_URL}/api/${type}`, {
         method: 'POST',
@@ -779,7 +988,6 @@ function closeAllModals() { document.querySelectorAll('.modal').forEach(m => m.c
 /* =============================================
    MENU HAMBURGER MOBILE
 ============================================= */
-
 function toggleMobileMenu() {
     const nav = document.getElementById('navMenu');
     const hamburger = document.getElementById('hamburger');
@@ -788,28 +996,29 @@ function toggleMobileMenu() {
     hamburger.classList.toggle('active');
 }
 
-// Fermer le menu si on clique sur un lien
+function closeMobileMenu() {
+    const nav = document.getElementById('navMenu');
+    const hamburger = document.getElementById('hamburger');
+    
+    if (nav.classList.contains('mobile-open')) {
+        nav.classList.remove('mobile-open');
+        hamburger.classList.remove('active');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const navLinks = document.querySelectorAll('.nav a');
     navLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            const nav = document.getElementById('navMenu');
-            const hamburger = document.getElementById('hamburger');
-            if (nav.classList.contains('mobile-open')) {
-                nav.classList.remove('mobile-open');
-                hamburger.classList.remove('active');
-            }
-        });
+        link.addEventListener('click', closeMobileMenu);
     });
 });
 
 /* =============================================
-   MODALS PERSONNALISÉES - Remplace prompt/confirm
+   MODALS PERSONNALISÉES
 ============================================= */
 let customConfirmResolve = null;
 let customPromptResolve = null;
 
-// Remplace confirm()
 function customConfirm(message) {
     return new Promise((resolve) => {
         customConfirmResolve = resolve;
@@ -826,14 +1035,12 @@ function resolveCustomConfirm(value) {
     }
 }
 
-// Remplace prompt()
 function customPrompt(message, defaultValue = '') {
     return new Promise((resolve) => {
         customPromptResolve = resolve;
         document.getElementById('promptMessage').textContent = message;
         document.getElementById('promptInput').value = defaultValue;
         document.getElementById('customPrompt').classList.remove('hidden');
-        // Focus sur l'input
         setTimeout(() => document.getElementById('promptInput').focus(), 100);
     });
 }
@@ -846,11 +1053,7 @@ function resolveCustomPrompt(value) {
     }
 }
 
-/* =============================================
-   SUPPORT CLAVIER - Entrée/Échap pour modals
-============================================= */
 document.addEventListener('keydown', (e) => {
-    // Modal Confirm
     if (!document.getElementById('customConfirm').classList.contains('hidden')) {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -861,7 +1064,6 @@ document.addEventListener('keydown', (e) => {
         }
     }
     
-    // Modal Prompt
     if (!document.getElementById('customPrompt').classList.contains('hidden')) {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -872,7 +1074,6 @@ document.addEventListener('keydown', (e) => {
         }
     }
     
-    // Autres modals (ajout catégorie, faction, etc.)
     const openModals = Array.from(document.querySelectorAll('.modal:not(.hidden)'))
         .filter(m => m.id !== 'customConfirm' && m.id !== 'customPrompt');
     
@@ -883,17 +1084,15 @@ document.addEventListener('keydown', (e) => {
 });
 
 /* =============================================
-   TOAST NOTIFICATIONS SYSTEM - Admin uniquement
+   TOAST NOTIFICATIONS
 ============================================= */
 function showToast(type, title, message, duration = 3000) {
-    // Vérifier si l'utilisateur est admin
-    if (!currentUser?.isAdmin) return;
+    if (!currentUser?.isAdmin && !currentUser?.isModerator) return;
     
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     
-    // Icônes selon le type
     const icons = {
         success: 'fa-check',
         error: 'fa-xmark',
@@ -913,7 +1112,6 @@ function showToast(type, title, message, duration = 3000) {
     
     container.appendChild(toast);
     
-    // Retirer après la durée spécifiée
     setTimeout(() => {
         toast.classList.add('removing');
         setTimeout(() => {
@@ -922,31 +1120,18 @@ function showToast(type, title, message, duration = 3000) {
     }, duration);
 }
 
-// Fonctions raccourcies pour chaque type
-function toastSuccess(title, message) {
-    showToast('success', title, message);
-}
-
-function toastError(title, message) {
-    showToast('error', title, message);
-}
-
-function toastWarning(title, message) {
-    showToast('warning', title, message);
-}
-
-function toastInfo(title, message) {
-    showToast('info', title, message);
-}
+function toastSuccess(title, message) { showToast('success', title, message); }
+function toastError(title, message) { showToast('error', title, message); }
+function toastWarning(title, message) { showToast('warning', title, message); }
+function toastInfo(title, message) { showToast('info', title, message); }
 
 /* =============================================
-   GESTION DES UTILISATEURS - Admin uniquement
+   GESTION DES UTILISATEURS
 ============================================= */
-
 let allUsers = [];
 
 async function loadUsers() {
-    if (!currentUser?.isAdmin) return;
+    if (!currentUser?.isAdmin && !currentUser?.isModerator) return;
     
     try {
         const res = await fetch(`${API_URL}/api/users`, { credentials: 'include' });
@@ -975,65 +1160,8 @@ function renderUsers() {
         const statusInfo = getStatusInfo(user.status);
         const date = new Date(user.connectedAt).toLocaleString('fr-FR');
         
-        row.innerHTML = `
-            <td>
-                <div class="user-cell">
-                    <img src="${user.avatar}" class="user-avatar" alt="${user.username}">
-                    <span class="user-name">${user.username}</span>
-                </div>
-            </td>
-            <td><code class="user-id">${user.id}</code></td>
-            <td><span class="status-badge ${user.status}">${statusInfo}</span></td>
-            <td class="user-date">${date}</td>
-            <td>
-                <div class="user-actions">
-                    ${user.status !== 'admin' ? `
-                        <select onchange="changeUserStatus('${user.id}', this.value)" class="status-select">
-                            <option value="">Action...</option>
-                            <option value="admin">👑 Administrateur</option>
-                            <option value="approved">✅ Éditeur</option>
-                            <option value="refused">❌ Refuser</option>
-                        </select>
-                    ` : '<span class="admin-badge">👑 Admin</span>'}
-                </div>
-            </td>
-        `;
-        
-        tbody.appendChild(row);
-    });
-    
-    if (filteredUsers.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#666; padding:40px;">Aucun utilisateur trouvé</td></tr>';
-    }
-}
-
-function getStatusInfo(status) {
-    const statusMap = {
-        'admin': '👑 Administrateur',
-        'moderator': '🛡️ Modérateur', // ✅ NOUVEAU
-        'approved': '✅ Éditeur',
-        'pending': '⏳ En attente',
-        'refused': '❌ Refusé'
-    };
-    return statusMap[status] || status;
-}
-
-function renderUsers() {
-    const tbody = document.getElementById('usersTableBody');
-    if (!tbody) return;
-    
-    tbody.innerHTML = '';
-    
-    const filteredUsers = allUsers.filter(u => {
-        const search = document.getElementById('userSearch')?.value.toLowerCase() || '';
-        return u.username.toLowerCase().includes(search) || u.id.includes(search);
-    });
-    
-    filteredUsers.forEach(user => {
-        const row = document.createElement('tr');
-        
-        const statusInfo = getStatusInfo(user.status);
-        const date = new Date(user.connectedAt).toLocaleString('fr-FR');
+        const canModify = (currentUser.isAdmin) || 
+                         (currentUser.isModerator && user.status !== 'admin' && user.status !== 'moderator');
         
         row.innerHTML = `
             <td>
@@ -1047,10 +1175,10 @@ function renderUsers() {
             <td class="user-date">${date}</td>
             <td>
                 <div class="user-actions">
-                    ${user.status !== 'admin' && !(user.status === 'moderator' && currentUser.status === 'moderator') ? `
+                    ${canModify ? `
                         <select onchange="changeUserStatus('${user.id}', this.value)" class="status-select">
                             <option value="">Action...</option>
-                            ${currentUser.status === 'admin' ? `
+                            ${currentUser.isAdmin ? `
                                 <option value="admin">👑 Administrateur</option>
                                 <option value="moderator">🛡️ Modérateur</option>
                             ` : ''}
@@ -1067,6 +1195,47 @@ function renderUsers() {
     
     if (filteredUsers.length === 0) {
         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#666; padding:40px;">Aucun utilisateur trouvé</td></tr>';
+    }
+}
+
+function getStatusInfo(status) {
+    const statusMap = {
+        'admin': '👑 Administrateur',
+        'moderator': '🛡️ Modérateur',
+        'approved': '✅ Éditeur',
+        'pending': '⏳ En attente',
+        'refused': '❌ Refusé'
+    };
+    return statusMap[status] || status;
+}
+
+async function changeUserStatus(userId, newStatus) {
+    if (!newStatus) return;
+    
+    try {
+        const res = await fetch(`${API_URL}/api/users/${userId}/status`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ status: newStatus })
+        });
+        
+        if (res.ok) {
+            await loadUsers();
+            const statusLabels = {
+                'admin': 'Administrateur',
+                'moderator': 'Modérateur',
+                'approved': 'Éditeur',
+                'refused': 'Refusé'
+            };
+            toastSuccess('Statut modifié', `L'utilisateur est maintenant ${statusLabels[newStatus]}`);
+        } else {
+            const data = await res.json();
+            toastError('Erreur', data.error || 'Impossible de modifier le statut');
+        }
+    } catch (e) {
+        console.error(e);
+        toastError('Erreur', 'Une erreur est survenue');
     }
 }
 
@@ -1089,14 +1258,12 @@ function updateUserStats() {
 }
 
 /* =============================================
-   SYSTÈME IMPORT/EXPORT JSON
+   IMPORT/EXPORT JSON
 ============================================= */
+let currentImportType = null;
 
-let currentImportType = null; // 'rules', 'legal', 'illegal'
-
-// EXPORT JSON
 function exportJSON(type) {
-    if (!currentUser?.isAdmin) return;
+    if (!currentUser?.isEditor) return;
     
     let dataToExport, filename;
     
@@ -1111,12 +1278,10 @@ function exportJSON(type) {
         filename = 'groupes-illegaux-smallcity.json';
     }
     
-    // Créer le fichier JSON
     const jsonString = JSON.stringify(dataToExport, null, 2);
     const blob = new Blob([jsonString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     
-    // Télécharger
     const a = document.createElement('a');
     a.href = url;
     a.download = filename;
@@ -1128,16 +1293,14 @@ function exportJSON(type) {
     toastSuccess('Export réussi', `${filename} téléchargé avec succès !`);
 }
 
-// OUVRIR MODAL IMPORT
 function openImportModal(type) {
-    if (!currentUser?.isAdmin) return;
+    if (!currentUser?.isEditor) return;
     
     currentImportType = type;
     document.getElementById('importJSONInput').value = '';
     document.getElementById('importPreview').style.display = 'none';
     document.getElementById('modalImportJSON').classList.remove('hidden');
     
-    // Mettre à jour le titre selon le type
     const titles = {
         'rules': 'Règlement',
         'legal': 'Entreprises',
@@ -1147,13 +1310,11 @@ function openImportModal(type) {
     document.querySelector('#modalImportJSON .import-subtitle strong').textContent = titles[type];
 }
 
-// FERMER MODAL IMPORT
 function closeImportModal() {
     document.getElementById('modalImportJSON').classList.add('hidden');
     currentImportType = null;
 }
 
-// DRAG & DROP
 const fileDropZone = document.getElementById('fileDropZone');
 
 if (fileDropZone) {
@@ -1211,7 +1372,6 @@ function handleFiles(file) {
     reader.readAsText(file);
 }
 
-// PRÉVISUALISATION JSON
 document.getElementById('importJSONInput')?.addEventListener('input', (e) => {
     previewJSON(e.target.value);
 });
@@ -1266,7 +1426,6 @@ function previewJSON(jsonString) {
     }
 }
 
-// CONFIRMER IMPORT
 async function confirmImportJSON() {
     const jsonString = document.getElementById('importJSONInput').value.trim();
     
@@ -1278,7 +1437,6 @@ async function confirmImportJSON() {
     try {
         const parsed = JSON.parse(jsonString);
         
-        // Validation selon le type
         if (currentImportType === 'rules' && typeof parsed !== 'object') {
             throw new Error('Le JSON doit être un objet pour le règlement');
         }
@@ -1286,12 +1444,10 @@ async function confirmImportJSON() {
             throw new Error('Le JSON doit être un tableau pour les factions');
         }
         
-        // Confirmation
         if (!await customConfirm('⚠️ Remplacer toutes les données actuelles par ce JSON ?')) {
             return;
         }
         
-        // Mise à jour des données
         if (currentImportType === 'rules') {
             data.rules = parsed;
             await pushData('rules', data.rules);
@@ -1316,9 +1472,8 @@ async function confirmImportJSON() {
 }
 
 /* =============================================
-   SYSTÈME FAQ
+   SYSTÈME FAQ OPTIMISÉ
 ============================================= */
-
 let allFAQ = [];
 let currentFAQFilter = 'all';
 let currentAnsweringQuestionId = null;
@@ -1339,7 +1494,6 @@ function renderFAQ() {
     const container = document.getElementById('faqContainer');
     if (!container) return;
     
-    // Filtrer les questions
     let filteredFAQ = allFAQ;
     
     if (currentFAQFilter === 'pending') {
@@ -1348,7 +1502,6 @@ function renderFAQ() {
         filteredFAQ = allFAQ.filter(q => q.status === 'answered');
     }
     
-    // Recherche
     const searchTerm = document.getElementById('faqSearch')?.value.toLowerCase() || '';
     if (searchTerm) {
         filteredFAQ = filteredFAQ.filter(q => 
@@ -1370,7 +1523,6 @@ function renderFAQ() {
         return;
     }
     
-    // Trier par date (plus récentes en premier)
     filteredFAQ.sort((a, b) => new Date(b.askedAt) - new Date(a.askedAt));
     
     filteredFAQ.forEach(faqItem => {
@@ -1385,7 +1537,10 @@ function renderFAQ() {
             minute: '2-digit'
         });
         
-        let answeredInfo = '';
+        const canEdit = currentUser?.isEditor || currentUser?.isAdmin || currentUser?.isModerator;
+        const showUserId = canEdit;
+        
+        let answeredSection = '';
         if (faqItem.status === 'answered' && faqItem.answeredBy) {
             const answeredDate = new Date(faqItem.answeredAt).toLocaleString('fr-FR', {
                 day: '2-digit',
@@ -1394,8 +1549,9 @@ function renderFAQ() {
                 hour: '2-digit',
                 minute: '2-digit'
             });
-            answeredInfo = `
-                <div class="faq-answer">
+            
+            answeredSection = `
+                <div class="faq-answer-section" id="answer-${faqItem.id}" style="display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.05);">
                     <div class="faq-answer-header">
                         <img src="${faqItem.answeredBy.avatar}" class="faq-avatar" alt="${faqItem.answeredBy.username}">
                         <div class="faq-answer-meta">
@@ -1408,9 +1564,6 @@ function renderFAQ() {
                 </div>
             `;
         }
-        
-        const canEdit = currentUser?.isEditor || currentUser?.isAdmin;
-        const showUserId = canEdit;
         
         let actions = '';
         if (faqItem.status === 'pending' && canEdit) {
@@ -1426,45 +1579,85 @@ function renderFAQ() {
                     ` : ''}
                 </div>
             `;
-        } else if (faqItem.status === 'answered' && currentUser?.isAdmin) {
+        } else if (faqItem.status === 'answered') {
             actions = `
                 <div class="faq-actions">
-                    <button class="btn btn-danger btn-sm" onclick="deleteFAQQuestion('${faqItem.id}')">
-                        <i class="fa-solid fa-trash"></i>
+                    <button class="btn btn-secondary btn-sm" onclick="toggleFAQAnswer('${faqItem.id}')">
+                        <i class="fa-solid fa-chevron-down"></i> <span id="toggle-text-${faqItem.id}">Voir la réponse</span>
                     </button>
+                    ${currentUser?.isAdmin ? `
+                        <button class="btn btn-danger btn-sm" onclick="deleteFAQQuestion('${faqItem.id}')">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    ` : ''}
                 </div>
             `;
         }
         
-        card.innerHTML = `
-            <div class="faq-question-header">
-                <img src="${faqItem.askedBy.avatar}" class="faq-avatar" alt="${faqItem.askedBy.username}">
-                <div class="faq-question-meta">
-                    <div class="faq-user-info">
-                        <strong>${faqItem.askedBy.username}</strong>
-                        ${showUserId ? `<code class="faq-user-id">${faqItem.askedBy.id}</code>` : ''}
+            card.innerHTML = `
+                <div class="faq-question-header" onclick="toggleFAQCard(this)">
+                    <img src="${faqItem.askedBy.avatar}" class="faq-avatar" alt="${faqItem.askedBy.username}">
+                    <div class="faq-question-meta">
+                        <div class="faq-user-info">
+                            <strong>${faqItem.askedBy.username}</strong>
+                            ${showUserId ? `<code class="faq-user-id">${faqItem.askedBy.id}</code>` : ''}
+                        </div>
+                        <span class="faq-date">${askedDate}</span>
                     </div>
-                    <span class="faq-date">${askedDate}</span>
+                    <span class="faq-badge ${faqItem.status}">
+                        ${faqItem.status === 'pending' ? '⏳ En attente' : '✅ Répondue'}
+                    </span>
+                    <i class="fa-solid fa-chevron-down faq-chevron"></i>
                 </div>
-                <span class="faq-badge ${faqItem.status}">
-                    ${faqItem.status === 'pending' ? '⏳ En attente' : '✅ Répondue'}
-                </span>
-            </div>
-            
-            <div class="faq-question-text">${faqItem.question}</div>
-            
-            ${answeredInfo}
-            ${actions}
-        `;
+                
+                <div class="faq-question-text">${faqItem.question}</div>
+                
+                <div class="faq-answer-container" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease;">
+                    ${answeredInfo}
+                    ${actions}
+                </div>
+            `;
         
         container.appendChild(card);
     });
 }
 
+function toggleFAQAnswer(questionId) {
+    const answerSection = document.getElementById(`answer-${questionId}`);
+    const toggleText = document.getElementById(`toggle-text-${questionId}`);
+    const button = toggleText.parentElement;
+    const icon = button.querySelector('i');
+    
+    if (answerSection.style.display === 'none') {
+        answerSection.style.display = 'block';
+        toggleText.textContent = 'Masquer la réponse';
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-up');
+    } else {
+        answerSection.style.display = 'none';
+        toggleText.textContent = 'Voir la réponse';
+        icon.classList.remove('fa-chevron-up');
+        icon.classList.add('fa-chevron-down');
+    }
+}
+
+function toggleFAQCard(header) {
+    const card = header.parentElement;
+    const answerContainer = card.querySelector('.faq-answer-container');
+    const chevron = card.querySelector('.faq-chevron');
+    
+    if (answerContainer.style.maxHeight === '0px' || answerContainer.style.maxHeight === '') {
+        answerContainer.style.maxHeight = answerContainer.scrollHeight + 'px';
+        chevron.style.transform = 'rotate(180deg)';
+    } else {
+        answerContainer.style.maxHeight = '0';
+        chevron.style.transform = 'rotate(0deg)';
+    }
+}
+
 function filterFAQ(filter) {
     currentFAQFilter = filter;
     
-    // Mettre à jour les boutons actifs
     document.querySelectorAll('.faq-filter-btn').forEach(btn => {
         btn.classList.remove('active');
         if (btn.dataset.filter === filter) {
@@ -1580,66 +1773,4 @@ async function deleteFAQQuestion(questionId) {
     }
 }
 
-function openAnswerModal(questionId) {
-    const question = allFAQ.find(q => q.id === questionId);
-    if (!question) return;
-    
-    currentAnsweringQuestionId = questionId;
-    document.getElementById('answerQuestionText').textContent = question.question;
-    document.getElementById('faqAnswerInput').value = '';
-    
-    openModal('modalAnswerQuestion');
-}
-
-async function submitAnswer() {
-    const answer = document.getElementById('faqAnswerInput').value.trim();
-    
-    if (!answer) {
-        toastError('Erreur', 'Veuillez entrer une réponse');
-        return;
-    }
-    
-    try {
-        const res = await fetch(`${API_URL}/api/faq/${currentAnsweringQuestionId}/answer`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ answer })
-        });
-        
-        if (res.ok) {
-            await loadFAQ();
-            closeAllModals();
-            toastSuccess('Réponse publiée', 'La réponse a été ajoutée avec succès !');
-            currentAnsweringQuestionId = null;
-        } else {
-            const data = await res.json();
-            toastError('Erreur', data.error || 'Impossible de publier la réponse');
-        }
-    } catch (e) {
-        console.error(e);
-        toastError('Erreur', 'Une erreur est survenue');
-    }
-}
-
-async function deleteFAQQuestion(questionId) {
-    if (!await customConfirm('Supprimer cette question ?')) return;
-    
-    try {
-        const res = await fetch(`${API_URL}/api/faq/${questionId}`, {
-            method: 'DELETE',
-            credentials: 'include'
-        });
-        
-        if (res.ok) {
-            await loadFAQ();
-            toastSuccess('Question supprimée', 'La question a été supprimée');
-        }
-    } catch (e) {
-        console.error(e);
-        toastError('Erreur', 'Impossible de supprimer la question');
-    }
-}
-
-/* --- INIT --- */
 init();

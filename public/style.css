@@ -2282,3 +2282,106 @@ footer::before {
     color: #ffa502;
     border: 1px solid rgba(255, 165, 2, 0.3);
 }
+
+/* =============================================
+   IMAGES REDIMENSIONNABLES
+============================================= */
+.image-wrapper {
+    position: relative;
+    display: inline-block;
+    margin: 20px auto;
+    max-width: 100%;
+}
+
+.image-wrapper:hover .resize-handle {
+    display: block;
+}
+
+.resize-handle {
+    display: none;
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: var(--primary);
+    border: 2px solid white;
+    border-radius: 50%;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+}
+
+.resize-handle:hover {
+    transform: scale(1.2);
+}
+
+.image-align-menu {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.image-align-menu button:hover {
+    background: var(--primary) !important;
+    color: #000 !important;
+}
+
+.faq-question-header {
+    cursor: pointer;
+    user-select: none;
+}
+
+.faq-chevron {
+    margin-left: auto;
+    transition: transform 0.3s ease;
+    color: #666;
+}
+
+.faq-answer-container {
+    transition: max-height 0.3s ease;
+}
+
+@media(max-width: 768px) {
+    /* ... code existant ... */
+    
+    /* Masquer certains boutons sur mobile */
+    .page-header-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .page-header-actions .btn:not(.btn-glow) {
+        display: none;
+    }
+    
+    /* FAQ optimisée mobile */
+    .faq-card {
+        padding: 16px;
+    }
+    
+    .faq-question-header {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .faq-avatar {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .faq-badge {
+        order: 3;
+        width: 100%;
+        text-align: center;
+    }
+    
+    /* Images responsives */
+    .image-wrapper {
+        max-width: 100% !important;
+        float: none !important;
+        display: block !important;
+        margin: 20px auto !important;
+    }
+    
+    .rule-content-image {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+}

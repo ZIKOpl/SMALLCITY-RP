@@ -28,6 +28,7 @@ async function init() {
         collapsedCategories.add(cat);
     });
     renderSidebar();
+    setupCleanPaste();
 }
 
 /* --- INIT --- */
@@ -442,40 +443,49 @@ async function insertLink() {
     toastSuccess('Lien ajouté', 'Le lien a été inséré.');
 }
 
-// Nettoyer le formatage lors du collage
-function cleanPaste() {
-    const content = document.getElementById("editContent");
-    if (!content) return;
-    
-    // Sélectionner tout le contenu
-    const selection = window.getSelection();
-    const range = document.createRange();
-    range.selectNodeContents(content);
-    selection.removeAllRanges();
-    selection.addRange(range);
-    
-    // Retirer le formatage
-    document.execCommand('removeFormat', false, null);
-    document.execCommand('unlink', false, null);
-    
-    toastInfo('Formatage nettoyé', 'Le formatage a été supprimé du texte sélectionné.');
-}
+/* =============================================
+   COPIER-COLLER PROPRE - Sans formatage externe
+============================================= */
 
-// Améliorer le collage automatique
-document.addEventListener('DOMContentLoaded', function() {
+// Nettoyer le formatage lors du collage
+function setupCleanPaste() {
     const editContent = document.getElementById('editContent');
-    if (editContent) {
-        editContent.addEventListener('paste', function(e) {
-            e.preventDefault();
-            
-            // Récupérer le texte sans formatage
-            const text = e.clipboardData.getData('text/plain');
-            
-            // Insérer le texte proprement
-            document.execCommand('insertText', false, text);
+    if (!editContent) return;
+    
+    editContent.addEventListener('paste', function(e) {
+        e.preventDefault();
+        
+        // Récupérer le texte brut sans aucun formatage
+        const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+        
+        // Insérer le texte proprement
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+        
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        
+        // Diviser par lignes et créer des paragraphes
+        const lines = text.split('\n');
+        lines.forEach((line, index) => {
+            if (line.trim()) {
+                const textNode = document.createTextNode(line);
+                range.insertNode(textNode);
+                
+                if (index < lines.length - 1) {
+                    const br = document.createElement('br');
+                    range.insertNode(br);
+                    range.setStartAfter(br);
+                }
+            }
         });
-    }
-});
+        
+        // Repositionner le curseur
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    });
+}
 
 function execCmd(cmd, val=null) { 
     document.execCommand(cmd, false, val); 
@@ -727,7 +737,7 @@ async function delFaction(gridId, index) {
     });
 }
 
-/* --- NAV / THEME --- */
+// Dans switchPage(), ajouter un rechargement FAQ
 function switchPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     
@@ -746,6 +756,11 @@ function switchPage(id) {
     body.classList.remove('theme-green', 'theme-red');
     if(id === 'legal') body.classList.add('theme-green');
     if(id === 'illegal') body.classList.add('theme-red');
+    
+    // ✅ RECHARGER LA FAQ SI ON VA SUR LA PAGE FAQ
+    if(id === 'faq') {
+        loadFAQ();
+    }
 }
 
 /* --- HELPERS --- */
@@ -760,6 +775,33 @@ async function pushData(type, body) {
 
 function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
 function closeAllModals() { document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden')); }
+
+/* =============================================
+   MENU HAMBURGER MOBILE
+============================================= */
+
+function toggleMobileMenu() {
+    const nav = document.getElementById('navMenu');
+    const hamburger = document.getElementById('hamburger');
+    
+    nav.classList.toggle('mobile-open');
+    hamburger.classList.toggle('active');
+}
+
+// Fermer le menu si on clique sur un lien
+document.addEventListener('DOMContentLoaded', function() {
+    const navLinks = document.querySelectorAll('.nav a');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            const nav = document.getElementById('navMenu');
+            const hamburger = document.getElementById('hamburger');
+            if (nav.classList.contains('mobile-open')) {
+                nav.classList.remove('mobile-open');
+                hamburger.classList.remove('active');
+            }
+        });
+    });
+});
 
 /* =============================================
    MODALS PERSONNALISÉES - Remplace prompt/confirm
@@ -968,6 +1010,7 @@ function renderUsers() {
 function getStatusInfo(status) {
     const statusMap = {
         'admin': '👑 Administrateur',
+        'moderator': '🛡️ Modérateur', // ✅ NOUVEAU
         'approved': '✅ Éditeur',
         'pending': '⏳ En attente',
         'refused': '❌ Refusé'
@@ -975,28 +1018,55 @@ function getStatusInfo(status) {
     return statusMap[status] || status;
 }
 
-async function changeUserStatus(userId, newStatus) {
-    if (!newStatus) return;
+function renderUsers() {
+    const tbody = document.getElementById('usersTableBody');
+    if (!tbody) return;
     
-    if (!await customConfirm(`Changer le statut de cet utilisateur en "${getStatusInfo(newStatus)}" ?`)) {
-        return;
-    }
+    tbody.innerHTML = '';
     
-    try {
-        const res = await fetch(`${API_URL}/api/users/${userId}/status`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ status: newStatus })
-        });
+    const filteredUsers = allUsers.filter(u => {
+        const search = document.getElementById('userSearch')?.value.toLowerCase() || '';
+        return u.username.toLowerCase().includes(search) || u.id.includes(search);
+    });
+    
+    filteredUsers.forEach(user => {
+        const row = document.createElement('tr');
         
-        if (res.ok) {
-            await loadUsers();
-            toastSuccess('Statut modifié', `L'utilisateur a été mis à jour.`);
-        }
-    } catch (e) {
-        console.error(e);
-        toastError('Erreur', 'Impossible de modifier le statut.');
+        const statusInfo = getStatusInfo(user.status);
+        const date = new Date(user.connectedAt).toLocaleString('fr-FR');
+        
+        row.innerHTML = `
+            <td>
+                <div class="user-cell">
+                    <img src="${user.avatar}" class="user-avatar" alt="${user.username}">
+                    <span class="user-name">${user.username}</span>
+                </div>
+            </td>
+            <td><code class="user-id">${user.id}</code></td>
+            <td><span class="status-badge ${user.status}">${statusInfo}</span></td>
+            <td class="user-date">${date}</td>
+            <td>
+                <div class="user-actions">
+                    ${user.status !== 'admin' && !(user.status === 'moderator' && currentUser.status === 'moderator') ? `
+                        <select onchange="changeUserStatus('${user.id}', this.value)" class="status-select">
+                            <option value="">Action...</option>
+                            ${currentUser.status === 'admin' ? `
+                                <option value="admin">👑 Administrateur</option>
+                                <option value="moderator">🛡️ Modérateur</option>
+                            ` : ''}
+                            <option value="approved">✅ Éditeur</option>
+                            <option value="refused">❌ Refuser</option>
+                        </select>
+                    ` : `<span class="admin-badge">${statusInfo}</span>`}
+                </div>
+            </td>
+        `;
+        
+        tbody.appendChild(row);
+    });
+    
+    if (filteredUsers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#666; padding:40px;">Aucun utilisateur trouvé</td></tr>';
     }
 }
 
@@ -1411,9 +1481,7 @@ function searchFAQ() {
 
 function openAskQuestionModal() {
     if (!currentUser) {
-        if (confirm('Vous devez être connecté pour poser une question. Se connecter maintenant ?')) {
-            window.location.href = `${API_URL}/auth/discord`;
-        }
+        openModal('modalLoginRequired');
         return;
     }
     
@@ -1448,6 +1516,67 @@ async function submitQuestion() {
     } catch (e) {
         console.error(e);
         toastError('Erreur', 'Une erreur est survenue');
+    }
+}
+
+function openAnswerModal(questionId) {
+    const question = allFAQ.find(q => q.id === questionId);
+    if (!question) return;
+    
+    currentAnsweringQuestionId = questionId;
+    document.getElementById('answerQuestionText').textContent = question.question;
+    document.getElementById('faqAnswerInput').value = '';
+    
+    openModal('modalAnswerQuestion');
+}
+
+async function submitAnswer() {
+    const answer = document.getElementById('faqAnswerInput').value.trim();
+    
+    if (!answer) {
+        toastError('Erreur', 'Veuillez entrer une réponse');
+        return;
+    }
+    
+    try {
+        const res = await fetch(`${API_URL}/api/faq/${currentAnsweringQuestionId}/answer`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ answer })
+        });
+        
+        if (res.ok) {
+            await loadFAQ();
+            closeAllModals();
+            toastSuccess('Réponse publiée', 'La réponse a été ajoutée avec succès !');
+            currentAnsweringQuestionId = null;
+        } else {
+            const data = await res.json();
+            toastError('Erreur', data.error || 'Impossible de publier la réponse');
+        }
+    } catch (e) {
+        console.error(e);
+        toastError('Erreur', 'Une erreur est survenue');
+    }
+}
+
+async function deleteFAQQuestion(questionId) {
+    if (!await customConfirm('Supprimer cette question ?')) return;
+    
+    try {
+        const res = await fetch(`${API_URL}/api/faq/${questionId}`, {
+            method: 'DELETE',
+            credentials: 'include'
+        });
+        
+        if (res.ok) {
+            await loadFAQ();
+            toastSuccess('Question supprimée', 'La question a été supprimée');
+        }
+    } catch (e) {
+        console.error(e);
+        toastError('Erreur', 'Impossible de supprimer la question');
     }
 }
 

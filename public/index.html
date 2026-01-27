@@ -24,7 +24,15 @@
             <div class="logo-text">Small<span>City</span></div>
         </div>
 
-        <nav class="nav">
+        <!-- Menu Hamburger (mobile uniquement) -->
+        <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <!-- Navigation -->
+        <nav class="nav" id="navMenu">
             <a onclick="switchPage('home')" class="active">Accueil</a>
             <a onclick="switchPage('rules')">Règlement</a>
             <a onclick="switchPage('legal')">Entreprises</a>
@@ -522,6 +530,23 @@
             <button class="btn btn-glow" onclick="submitAnswer()">
                 <i class="fa-solid fa-check"></i> Publier
             </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL CONNEXION REQUISE -->
+<div id="modalLoginRequired" class="modal hidden">
+    <div class="modal-box" style="max-width: 450px; text-align: center;">
+        <div class="login-required-icon">
+            <i class="fa-brands fa-discord"></i>
+        </div>
+        <h3>Connexion requise</h3>
+        <p style="color: #888; margin-bottom: 24px;">Vous devez être connecté avec Discord pour poser une question.</p>
+        <div class="modal-actions" style="justify-content: center;">
+            <button class="btn btn-secondary" onclick="closeAllModals()">Annuler</button>
+            <a href="/auth/discord" class="btn btn-discord">
+                <i class="fa-brands fa-discord"></i> Se connecter
+            </a>
         </div>
     </div>
 </div>

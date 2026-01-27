@@ -141,12 +141,10 @@ passport.use(new DiscordStrategy({
     scope: ["identify"]
 }, async (accessToken, refreshToken, profile, done) => {
     try {
-        // Enregistrer/mettre à jour l'utilisateur
         let users = readJSON('users.json');
         let user = users.find(u => u.id === profile.id);
         
         if (!user) {
-            // Nouvel utilisateur
             user = {
                 id: profile.id,
                 username: profile.username,
@@ -157,7 +155,6 @@ passport.use(new DiscordStrategy({
             users.push(user);
             console.log('✅ Nouvel utilisateur créé:', user.username);
         } else {
-            // Mettre à jour
             user.username = profile.username;
             user.avatar = `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png`;
             user.connectedAt = new Date().toISOString();
@@ -166,7 +163,6 @@ passport.use(new DiscordStrategy({
         
         writeJSON('users.json', users);
         
-        // Vérifier le statut
         if (user.status === 'refused') {
           console.log('🚫 Utilisateur refusé:', user.username);
           return done(null, false);
@@ -223,7 +219,8 @@ app.get("/auth/user", (req, res) => {
         avatar: req.user.avatar,
         status: req.user.status,
         isAdmin: req.user.status === 'admin',
-        isEditor: req.user.status === 'admin' || req.user.status === 'approved'
+        isModerator: req.user.status === 'moderator', // ✅ NOUVEAU
+        isEditor: req.user.status === 'admin' || req.user.status === 'moderator' || req.user.status === 'approved'
     });
 });
 
@@ -240,17 +237,33 @@ app.get('/api/users', (req, res) => {
 });
 
 app.post('/api/users/:id/status', (req, res) => {
-    if (!req.user || req.user.status !== 'admin') {
+    // ✅ Admin ou Moderator peuvent modifier
+    if (!req.user || (req.user.status !== 'admin' && req.user.status !== 'moderator')) {
         return res.status(403).json({ error: 'Accès refusé' });
     }
     
     const { id } = req.params;
     const { status } = req.body;
     
+    // ✅ Moderator ne peut pas créer d'autres moderators ou admins
+    if (req.user.status === 'moderator' && (status === 'moderator' || status === 'admin')) {
+        return res.status(403).json({ error: 'Vous ne pouvez pas attribuer ce rôle' });
+    }
+    
     const users = readJSON('users.json');
     const user = users.find(u => u.id === id);
     
     if (user) {
+        // ✅ Ne pas permettre de modifier un admin
+        if (user.status === 'admin' && req.user.status !== 'admin') {
+            return res.status(403).json({ error: 'Impossible de modifier un administrateur' });
+        }
+        
+        // ✅ Ne pas permettre à un moderator de modifier un autre moderator
+        if (user.status === 'moderator' && req.user.status === 'moderator') {
+            return res.status(403).json({ error: 'Impossible de modifier un autre modérateur' });
+        }
+        
         user.status = status;
         writeJSON('users.json', users);
         res.json({ success: true, user });
@@ -282,8 +295,12 @@ const sendFile = (res, file) => {
 };
 
 const saveFile = (req, res, file) => {
-    // ✅ CORRECTION : Autoriser admin ET approved (éditeurs)
-    const isEditor = req.user && (req.user.status === 'admin' || req.user.status === 'approved');
+    // ✅ Autoriser admin, moderator ET approved
+    const isEditor = req.user && (
+        req.user.status === 'admin' || 
+        req.user.status === 'moderator' || 
+        req.user.status === 'approved'
+    );
     
     if (!isEditor) {
         console.log("🚫 Accès refusé - pas éditeur");

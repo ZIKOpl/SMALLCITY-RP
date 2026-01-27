@@ -2148,3 +2148,137 @@ footer::before {
     color: var(--primary);
     font-size: 1rem;
 }
+
+/* =============================================
+   MENU HAMBURGER
+============================================= */
+
+.hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    z-index: 1001;
+}
+
+.hamburger span {
+    width: 25px;
+    height: 3px;
+    background: white;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(7px, 7px);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -7px);
+}
+
+/* Mobile menu styles */
+@media(max-width: 768px) {
+    .hamburger {
+        display: flex;
+    }
+    
+    .nav {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        right: 0;
+        background: rgba(10, 10, 12, 0.98);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        padding: 20px;
+        gap: 0;
+        transform: translateY(-100%);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+    
+    .nav.mobile-open {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+    
+    .nav a {
+        width: 100%;
+        padding: 15px 20px;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        font-size: 0.95rem;
+    }
+    
+    .nav a:last-child {
+        border-bottom: none;
+    }
+    
+    .auth-area {
+        margin-top: 0;
+    }
+}
+
+/* =============================================
+   BOUTONS DISCORD THÉMATIQUES
+============================================= */
+
+#legalDiscordBtn {
+    background: linear-gradient(135deg, #00ff9d 0%, #00cc7a 100%);
+    color: #000;
+    border: none;
+    box-shadow: 0 0 20px rgba(0, 255, 157, 0.4);
+}
+
+#legalDiscordBtn:hover {
+    box-shadow: 0 0 30px rgba(0, 255, 157, 0.6);
+    transform: translateY(-2px);
+}
+
+#illegalDiscordBtn {
+    background: linear-gradient(135deg, #ff2a2a 0%, #cc2222 100%);
+    color: #fff;
+    border: none;
+    box-shadow: 0 0 20px rgba(255, 42, 42, 0.4);
+}
+
+#illegalDiscordBtn:hover {
+    box-shadow: 0 0 30px rgba(255, 42, 42, 0.6);
+    transform: translateY(-2px);
+}
+
+.login-required-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: rgba(88, 101, 242, 0.15);
+    border: 2px solid rgba(88, 101, 242, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-required-icon i {
+    font-size: 2.5rem;
+    color: #5865f2;
+}
+
+.status-badge.moderator {
+    background: rgba(255, 165, 2, 0.15);
+    color: #ffa502;
+    border: 1px solid rgba(255, 165, 2, 0.3);
+}
